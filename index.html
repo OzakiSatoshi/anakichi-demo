@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/design-system-2cdba429-1bff-448c-8477-dabcc6189504/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/design-system-2cdba429-1bff-448c-8477-dabcc6189504/tokens/colors.css">
+<link rel="stylesheet" href="_ds/design-system-2cdba429-1bff-448c-8477-dabcc6189504/tokens/typography.css">
+<link rel="stylesheet" href="_ds/design-system-2cdba429-1bff-448c-8477-dabcc6189504/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/design-system-2cdba429-1bff-448c-8477-dabcc6189504/styles.css">
+<script src="_ds/design-system-2cdba429-1bff-448c-8477-dabcc6189504/_ds_bundle.js"></script>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg-app); }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: rgba(120,88,80,.18); border-radius: 8px; }
+  input, button, textarea { font-family: inherit; }
+  input, textarea { -webkit-user-select: text; user-select: text; }
+  @keyframes anaRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes anaPulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+</style>
+</helmet>
+
+<div style="{{ appStyle }}">
+
+  <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ false }}">
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg-app)">
+      <div style="width:100%;max-width:380px;position:relative;background:var(--surface-paper);border:1px solid var(--rule);border-radius:14px;padding:40px 30px 34px 56px;box-shadow:var(--shadow-paper-inset),var(--shadow-panel)">
+        <span aria-hidden="true" style="position:absolute;left:18px;top:0;bottom:0;width:14px;background-image:radial-gradient(circle at center, var(--hole) 0 6px, transparent 7px);background-size:14px calc(100% / 6);background-repeat:repeat-y;background-position:center;pointer-events:none"></span>
+        <div style="font-family:var(--font-hand);font-weight:600;font-size:30px;color:var(--ink-strong);line-height:1.2">あな吉手帳</div>
+        <div style="font-size:13px;color:var(--ink-soft);margin-top:6px;letter-spacing:.04em">頭の中を、ぜんぶ付箋に。</div>
+        <div style="height:1px;background:var(--rule);margin:22px 0 20px"></div>
+        <label style="display:block;font-size:12px;color:var(--ink-soft);margin-bottom:5px">メールアドレス</label>
+        <input value="{{ loginEmail }}" onChange="{{ onLoginEmail }}" placeholder="you@example.com" style="width:100%;padding:11px 12px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);font-size:15px;outline:none;margin-bottom:14px">
+        <label style="display:block;font-size:12px;color:var(--ink-soft);margin-bottom:5px">パスワード</label>
+        <input type="password" value="{{ loginPw }}" onChange="{{ onLoginPw }}" placeholder="••••••••" style="width:100%;padding:11px 12px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);font-size:15px;outline:none;margin-bottom:20px">
+        <button onClick="{{ onLogin }}" style="width:100%;padding:12px;border:none;border-radius:999px;background:var(--ink-strong);color:#fff;font-size:15px;font-family:var(--font-hand);cursor:pointer">ログイン</button>
+        <div style="display:flex;align-items:center;gap:10px;margin:16px 0">
+          <div style="flex:1;height:1px;background:var(--rule)"></div>
+          <span style="font-size:11px;color:var(--ink-soft)">または</span>
+          <div style="flex:1;height:1px;background:var(--rule)"></div>
+        </div>
+        <button onClick="{{ onLogin }}" style="width:100%;padding:11px;border:1px solid var(--rule);border-radius:999px;background:#fff;color:var(--ink);font-size:14px;cursor:pointer">Google で続ける</button>
+        <div style="font-size:11px;color:var(--ink-soft);margin-top:16px;line-height:1.6">デモ用の簡易ログインです。どの値でも入れます。<br>データはこの端末内にのみ保存されます。</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ true }}">
+  <div style="{{ shellStyle }}">
+
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ false }}">
+      <aside style="width:218px;flex:none;background:var(--surface-paper);border-right:1px solid var(--rule);display:flex;flex-direction:column;padding:22px 16px;gap:6px">
+        <div style="font-family:var(--font-hand);font-weight:600;font-size:24px;color:var(--ink-strong);padding:0 8px 4px">あな吉手帳</div>
+        <div style="font-size:12px;color:var(--ink-soft);padding:0 8px 16px">{{ brandDate }}</div>
+        <sc-for list="{{ navItems }}" as="nav" hint-placeholder-count="4">
+          <button onClick="{{ nav.onClick }}" style="{{ nav.railStyle }}"><span style="font-size:14px">{{ nav.label }}</span></button>
+        </sc-for>
+        <div style="flex:1"></div>
+        <button onClick="{{ onOpenAI }}" style="{{ toolRailStyle }}">AI 音声入力</button>
+        <button onClick="{{ onOpenLog }}" style="{{ toolRailStyle }}">完了ログ</button>
+        <button onClick="{{ onOpenSettings }}" style="{{ toolRailStyle }}">設定・連携</button>
+      </aside>
+    </sc-if>
+
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;min-height:0">
+
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ true }}">
+        <header style="flex:none;display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--surface-paper);border-bottom:1px solid var(--rule)">
+          <div style="min-width:0">
+            <div style="font-family:var(--font-hand);font-weight:600;font-size:20px;color:var(--ink-strong);line-height:1.1">あな吉手帳</div>
+            <div style="font-size:11px;color:var(--ink-soft)">{{ brandDate }}</div>
+          </div>
+          <div style="flex:1"></div>
+          <button onClick="{{ onOpenAI }}" style="{{ toolChipStyle }}">AI</button>
+          <button onClick="{{ onOpenLog }}" style="{{ toolChipStyle }}">ログ</button>
+          <button onClick="{{ onOpenSettings }}" style="{{ toolChipStyle }}">設定</button>
+        </header>
+      </sc-if>
+
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:18px 18px 26px;position:relative">
+
+        <!-- ===== 置き場 / Inbox ===== -->
+        <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:760px;margin:0 auto">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+              <span style="display:inline-block;background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:7px 22px;font-family:var(--font-hand);font-size:16px;color:var(--ink-strong)">付箋 置き場</span>
+              <span style="font-size:12px;color:var(--ink-soft)">{{ inboxCountLabel }}</span>
+            </div>
+            <p style="font-size:13px;color:var(--ink-soft);margin:0 0 16px;line-height:1.6">思いついたことを、ぜんぶ書き出して貼っておく場所。色で分類が決まります。ここから週・日へドラッグして配置します。</p>
+
+            <div style="background:var(--surface-paper);border:1px solid var(--rule);border-radius:12px;padding:14px;margin-bottom:18px;box-shadow:var(--shadow-paper-inset)">
+              <input value="{{ cmpText }}" onChange="{{ onCmpText }}" onKeyDown="{{ onCmpKey }}" placeholder="付箋に書く内容…（例：見積書を作成）" style="width:100%;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);font-size:15px;outline:none;margin-bottom:11px">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <span style="font-size:12px;color:var(--ink-soft)">分類</span>
+                <sc-for list="{{ cmpColors }}" as="sw" hint-placeholder-count="4">
+                  <button onClick="{{ sw.onClick }}" title="{{ sw.label }}" style="{{ sw.style }}"></button>
+                </sc-for>
+                <span style="width:1px;height:20px;background:var(--rule);margin:0 2px"></span>
+                <span style="font-size:12px;color:var(--ink-soft)">所要</span>
+                <button onClick="{{ onCmpDurMinus }}" style="{{ stepBtnStyle }}">−</button>
+                <span style="font-family:var(--font-hand);font-size:14px;color:var(--ink);min-width:54px;text-align:center">{{ cmpDurLabel }}</span>
+                <button onClick="{{ onCmpDurPlus }}" style="{{ stepBtnStyle }}">＋</button>
+                <div style="flex:1"></div>
+                <button onClick="{{ onCmpAdd }}" style="background:var(--ink-strong);color:#fff;border:none;border-radius:999px;padding:8px 22px;font-family:var(--font-hand);font-size:14px;cursor:pointer">貼る</button>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;min-height:120px" data-drop="inbox">
+              <sc-for list="{{ inboxNotes }}" as="n" hint-placeholder-count="8">
+                <div onPointerDown="{{ n.onDown }}" style="{{ n.style }}">
+                  <div style="font-family:var(--font-hand);font-size:var(--text-sm);color:var(--ink);line-height:1.35">{{ n.text }}</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
+                    <span style="font-size:11px;color:var(--ink-soft);white-space:nowrap;flex:none">{{ n.durLabel }}</span>
+                    <sc-if value="{{ n.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="{{ n.badgeStyle }}">{{ n.badge }}</span></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ inboxEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="width:100%;text-align:center;color:var(--ink-soft);font-size:13px;padding:30px 0;font-family:var(--font-hand)">置き場は空っぽ。気持ちいいですね。</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===== デイリー / Daily ===== -->
+        <sc-if value="{{ isDaily }}" hint-placeholder-val="{{ true }}">
+          <div style="max-width:680px;margin:0 auto">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+              <span style="display:inline-block;background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:7px 22px;font-family:var(--font-hand);font-size:16px;color:var(--ink-strong)">デイリー</span>
+              <button onClick="{{ onDayToday }}" style="{{ todayBtnStyle }}">今日</button>
+              <div style="flex:1"></div>
+              <button onClick="{{ onDayPrev }}" title="前日" style="{{ navArrowStyle }}">‹</button>
+              <span style="font-family:var(--font-hand);font-size:15px;color:var(--ink-strong);min-width:118px;text-align:center">{{ dailyDateLabel }}</span>
+              <button onClick="{{ onDayNext }}" title="翌日" style="{{ navArrowStyle }}">›</button>
+            </div>
+
+            <div style="display:flex;background:var(--surface-daily);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow-paper-inset);overflow:hidden">
+              <div style="width:46px;flex:none;border-right:1px dashed var(--rule)">
+                <sc-for list="{{ dailyHours }}" as="h" hint-placeholder-count="14">
+                  <div style="{{ h.gutterStyle }}">{{ h.label }}</div>
+                </sc-for>
+              </div>
+              <div id="daily-grid" data-drop="daily" data-date="{{ dailyDate }}" style="{{ dailyGridStyle }}">
+                <sc-for list="{{ dailyHours }}" as="h" hint-placeholder-count="14">
+                  <div style="{{ h.cellStyle }}"></div>
+                </sc-for>
+                <div style="{{ dailyNotesLayerStyle }}">
+                  <sc-for list="{{ dailyNotes }}" as="n" hint-placeholder-count="5">
+                    <div onPointerDown="{{ n.onDown }}" style="{{ n.style }}">
+                      <div style="font-family:var(--font-hand);font-size:var(--text-sm);color:var(--ink);line-height:1.25;overflow:hidden">{{ n.text }}</div>
+                      <div style="font-size:10px;color:var(--ink-soft);margin-top:2px">{{ n.sub }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:12px;color:var(--ink-soft);margin:12px 2px 0;line-height:1.6">付箋を上下にドラッグで時間を変更（ダブルクリックで編集）。下のトレイから貼り付け、終わったら「完了」へ、残ったら「置き場へ」ドラッグで戻せます。</p>
+          </div>
+        </sc-if>
+
+        <!-- ===== ウィークリー / Weekly ===== -->
+        <sc-if value="{{ isWeekly }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:1180px;margin:0 auto">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span style="display:inline-block;background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:7px 22px;font-family:var(--font-hand);font-size:16px;color:var(--ink-strong)">ウィークリー</span>
+              <button onClick="{{ onWeekToday }}" style="{{ weekTodayStyle }}">今週</button>
+              <div style="flex:1"></div>
+              <button onClick="{{ onWeekPrev }}" title="前週" style="{{ navArrowStyle }}">‹</button>
+              <span style="font-size:12px;color:var(--ink-soft);min-width:118px;text-align:center">{{ weekRangeLabel }}</span>
+              <button onClick="{{ onWeekNext }}" title="翌週" style="{{ navArrowStyle }}">›</button>
+            </div>
+            <div style="display:flex;margin-bottom:4px">
+              <div style="width:54px;flex:none"></div>
+              <div style="position:relative;flex:1;height:14px">
+                <sc-for list="{{ rulerHours }}" as="r" hint-placeholder-count="6">
+                  <span style="{{ r.style }}">{{ r.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:var(--surface-paper);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow-paper-inset);overflow:hidden">
+              <sc-for list="{{ weekDays }}" as="d" hint-placeholder-count="7">
+                <div style="{{ d.rowStyle }}">
+                  <div style="width:54px;flex:none;padding:7px 0 0 9px;border-right:1px dashed var(--rule)">
+                    <div style="font-family:var(--font-hand);font-size:16px;color:{{ d.dateColor }};line-height:1">{{ d.day }}</div>
+                    <div style="font-size:11px;color:var(--ink-soft)">{{ d.weekday }}</div>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div data-drop="weekly" data-date="{{ d.date }}" style="{{ d.trackStyle }}">
+                      <sc-for list="{{ timeGuides }}" as="g" hint-placeholder-count="6"><div style="{{ g.style }}"></div></sc-for>
+                      <sc-for list="{{ d.timed }}" as="n" hint-placeholder-count="2">
+                        <div onPointerDown="{{ n.onDown }}" style="{{ n.style }}"><span style="white-space:nowrap">{{ n.text }}</span></div>
+                      </sc-for>
+                    </div>
+                    <div data-drop="weekly-untimed" data-date="{{ d.date }}" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:30px;padding:4px 8px;border-top:1px dashed var(--rule);background:var(--zebra)">
+                      <span style="font-size:10px;color:var(--ink-soft);flex:none">未指定</span>
+                      <sc-for list="{{ d.untimed }}" as="n" hint-placeholder-count="1">
+                        <div onPointerDown="{{ n.onDown }}" style="{{ n.style }}">{{ n.text }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <p style="font-size:12px;color:var(--ink-soft);margin:12px 2px 0;line-height:1.6">時間帯の帯にドラッグで配置（横が時間軸・幅が所要時間）。下段「未指定」は時間を決めていない付箋置き場です。</p>
+          </div>
+        </sc-if>
+
+        <!-- ===== マンスリー / Monthly ===== -->
+        <sc-if value="{{ isMonthly }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:1180px;margin:0 auto">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span style="display:inline-block;background:var(--paper);border:1.5px solid var(--ink);border-radius:999px;padding:7px 22px;font-family:var(--font-hand);font-size:16px;color:var(--ink-strong)">マンスリー</span>
+              <button onClick="{{ onMonthToday }}" style="{{ monthTodayStyle }}">今</button>
+              <span style="font-size:11px;color:var(--ink-soft)">半月アジェンダ</span>
+              <div style="flex:1"></div>
+              <button onClick="{{ onMonthPrev }}" title="前へ" style="{{ navArrowStyle }}">‹</button>
+              <span style="font-size:12px;color:var(--ink-soft);min-width:118px;text-align:center">{{ monthRangeLabel }}</span>
+              <button onClick="{{ onMonthNext }}" title="次へ" style="{{ navArrowStyle }}">›</button>
+            </div>
+            <div style="display:flex;margin-bottom:4px">
+              <div style="width:60px;flex:none"></div>
+              <div style="position:relative;flex:1;height:14px">
+                <sc-for list="{{ rulerHours }}" as="r" hint-placeholder-count="6">
+                  <span style="{{ r.style }}">{{ r.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:var(--surface-paper);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow-paper-inset);overflow:hidden">
+              <sc-for list="{{ monthDays }}" as="d" hint-placeholder-count="16">
+                <div style="{{ d.rowStyle }}">
+                  <div style="width:60px;flex:none;display:flex;align-items:center;gap:6px;padding-left:10px;border-right:1px dashed var(--rule)">
+                    <span style="font-family:var(--font-hand);font-size:15px;color:{{ d.dateColor }}">{{ d.day }}</span>
+                    <span style="font-size:10px;color:var(--ink-soft)">{{ d.weekday }}</span>
+                  </div>
+                  <div data-drop="monthly" data-date="{{ d.date }}" style="{{ d.trackStyle }}">
+                    <sc-for list="{{ timeGuides }}" as="g" hint-placeholder-count="6"><div style="{{ g.style }}"></div></sc-for>
+                    <sc-for list="{{ d.timed }}" as="n" hint-placeholder-count="2">
+                      <div onPointerDown="{{ n.onDown }}" style="{{ n.style }}"><span style="white-space:nowrap">{{ n.text }}</span></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <p style="font-size:12px;color:var(--ink-soft);margin:12px 2px 0;line-height:1.6">半月分を俯瞰。各日の予定を横の時間バーで表示します（実物の見開き構成に準拠）。</p>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <!-- ===== Tray (daily/weekly drag source) ===== -->
+      <sc-if value="{{ showTray }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:none;border-top:1px solid var(--rule);background:var(--surface-paper);padding:9px 14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+            <span style="font-family:var(--font-hand);font-size:13px;color:var(--ink-strong)">置き場トレイ</span>
+            <span style="font-size:11px;color:var(--ink-soft)">→ ドラッグして配置</span>
+          </div>
+          <div style="display:flex;gap:9px;overflow-x:auto;padding-bottom:3px">
+            <sc-for list="{{ trayNotes }}" as="n" hint-placeholder-count="6">
+              <div onPointerDown="{{ n.onDown }}" style="{{ n.style }}">
+                <div style="font-family:var(--font-hand);font-size:var(--text-sm);color:var(--ink);line-height:1.3">{{ n.text }}</div>
+                <span style="font-size:10px;color:var(--ink-soft)">{{ n.durLabel }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ trayEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="color:var(--ink-soft);font-size:12px;padding:8px 4px;font-family:var(--font-hand)">置き場は空です</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===== Bottom nav (narrow) ===== -->
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ true }}">
+        <nav style="flex:none;display:flex;background:var(--surface-paper);border-top:1px solid var(--rule);padding:6px 6px calc(6px + env(safe-area-inset-bottom))">
+          <sc-for list="{{ navItems }}" as="nav" hint-placeholder-count="4">
+            <button onClick="{{ nav.onClick }}" style="{{ nav.tabStyle }}"><span style="font-family:var(--font-hand);font-size:17px;line-height:1">{{ nav.icon }}</span><span style="font-size:10px">{{ nav.label }}</span></button>
+          </sc-for>
+        </nav>
+      </sc-if>
+
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== Drag ghost + drop pads ===== -->
+  <sc-if value="{{ dragging }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ ghostStyle }}">{{ ghostText }}</div>
+    <div data-drop="done" style="{{ donePadStyle }}"><span style="font-family:var(--font-hand);font-size:15px">完了</span><span style="font-size:10px">剥がす</span></div>
+    <div data-drop="inbox" style="{{ inboxPadStyle }}"><span style="font-family:var(--font-hand);font-size:15px">置き場へ</span><span style="font-size:10px">戻す</span></div>
+  </sc-if>
+
+  <!-- ===== Note editor sheet ===== -->
+  <sc-if value="{{ editorOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ onEdClose }}" style="position:fixed;inset:0;background:rgba(94,68,60,.28);z-index:60;display:flex;align-items:flex-end;justify-content:center"></div>
+    <div style="{{ sheetStyle }}">
+      <div style="display:flex;align-items:center;margin-bottom:14px">
+        <span style="font-family:var(--font-hand);font-size:18px;color:var(--ink-strong)">付箋を編集</span>
+        <div style="flex:1"></div>
+        <button onClick="{{ onEdClose }}" style="background:none;border:none;font-size:22px;color:var(--ink-soft);cursor:pointer;line-height:1">×</button>
+      </div>
+      <textarea value="{{ edText }}" onChange="{{ onEdText }}" rows="2" style="width:100%;padding:11px 12px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);font-size:15px;font-family:var(--font-hand);outline:none;resize:none;margin-bottom:12px"></textarea>
+      <label style="display:block;font-size:12px;color:var(--ink-soft);margin-bottom:6px">分類（地色）</label>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <sc-for list="{{ edColors }}" as="sw" hint-placeholder-count="4">
+          <button onClick="{{ sw.onClick }}" title="{{ sw.label }}" style="{{ sw.style }}"></button>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:12px;color:var(--ink-soft);width:56px">所要時間</span>
+        <button onClick="{{ onEdDurMinus }}" style="{{ stepBtnStyle }}">−</button>
+        <span style="font-family:var(--font-hand);font-size:15px;color:var(--ink);min-width:64px;text-align:center">{{ edDurLabel }}</span>
+        <button onClick="{{ onEdDurPlus }}" style="{{ stepBtnStyle }}">＋</button>
+        <span style="font-size:11px;color:var(--ink-soft)">5分刻み</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--ink-soft);width:56px">締め切り</span>
+        <input type="datetime-local" value="{{ edDue }}" onChange="{{ onEdDue }}" style="flex:1;min-width:160px;padding:9px 10px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);font-size:14px;outline:none">
+        <button onClick="{{ onEdDueClear }}" style="{{ ghostBtnStyle }}">なし</button>
+      </div>
+      <label style="display:block;font-size:12px;color:var(--ink-soft);margin-bottom:6px">メモ</label>
+      <textarea value="{{ edMemo }}" onChange="{{ onEdMemo }}" rows="2" placeholder="補足メモ…" style="width:100%;padding:11px 12px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);font-size:14px;outline:none;resize:none;margin-bottom:18px"></textarea>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button onClick="{{ onEdComplete }}" style="flex:1;min-width:120px;padding:11px;border:none;border-radius:999px;background:var(--ink-strong);color:#fff;font-family:var(--font-hand);font-size:14px;cursor:pointer">完了（剥がす）</button>
+        <button onClick="{{ onEdToInbox }}" style="{{ ghostBtnStyle2 }}">置き場へ戻す</button>
+        <button onClick="{{ onEdDelete }}" style="padding:11px 18px;border:1px solid var(--rule);border-radius:999px;background:#fff;color:var(--ink-soft);font-size:13px;cursor:pointer">削除</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===== AI mock sheet ===== -->
+  <sc-if value="{{ aiOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ onAiClose }}" style="position:fixed;inset:0;background:rgba(94,68,60,.28);z-index:60;display:flex;align-items:flex-end;justify-content:center"></div>
+    <div style="{{ sheetStyle }}">
+      <div style="display:flex;align-items:center;margin-bottom:6px">
+        <span style="font-family:var(--font-hand);font-size:18px;color:var(--ink-strong)">AI 音声入力</span>
+        <span style="margin-left:8px;font-size:10px;color:var(--peach-deep);border:1px solid var(--peach-deep);border-radius:999px;padding:1px 8px">デモ・モック</span>
+        <div style="flex:1"></div>
+        <button onClick="{{ onAiClose }}" style="background:none;border:none;font-size:22px;color:var(--ink-soft);cursor:pointer;line-height:1">×</button>
+      </div>
+      <p style="font-size:12px;color:var(--ink-soft);margin:0 0 16px;line-height:1.6">話した内容を、きれいな言葉で付箋リストにします。<strong>最終判断は人が行います</strong>（提案のみ）。</p>
+      <div style="display:flex;justify-content:center;margin-bottom:14px">
+        <button onClick="{{ onAiRecord }}" style="{{ aiMicStyle }}">{{ aiMicLabel }}</button>
+      </div>
+      <sc-if value="{{ aiHasTranscript }}" hint-placeholder-val="{{ false }}">
+        <div style="background:var(--zebra);border:1px dashed var(--rule);border-radius:8px;padding:11px 13px;font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:14px">「{{ aiTranscript }}」</div>
+      </sc-if>
+      <sc-if value="{{ aiHasResults }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">整理した付箋（{{ aiResultCount }}）</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+          <sc-for list="{{ aiResults }}" as="r" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:10px;background:var(--surface-paper);border:1px solid var(--rule);border-radius:8px;padding:9px 11px">
+              <span style="width:14px;height:14px;border-radius:4px;flex:none;background:{{ r.bg }}"></span>
+              <span style="flex:1;font-family:var(--font-hand);font-size:14px;color:var(--ink)">{{ r.text }}</span>
+              <span style="font-size:11px;color:var(--ink-soft)">{{ r.durLabel }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ onAiAddAll }}" style="width:100%;padding:11px;border:none;border-radius:999px;background:var(--ink-strong);color:#fff;font-family:var(--font-hand);font-size:14px;cursor:pointer">すべて置き場に追加</button>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- ===== Settings sheet ===== -->
+  <sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ onSetClose }}" style="position:fixed;inset:0;background:rgba(94,68,60,.28);z-index:60;display:flex;align-items:flex-end;justify-content:center"></div>
+    <div style="{{ sheetStyle }}">
+      <div style="display:flex;align-items:center;margin-bottom:16px">
+        <span style="font-family:var(--font-hand);font-size:18px;color:var(--ink-strong)">設定・連携</span>
+        <div style="flex:1"></div>
+        <button onClick="{{ onSetClose }}" style="background:none;border:none;font-size:22px;color:var(--ink-soft);cursor:pointer;line-height:1">×</button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <span style="font-size:13px;color:var(--ink);width:120px">デイリー表示時間</span>
+        <button onClick="{{ onStartMinus }}" style="{{ stepBtnStyle }}">−</button>
+        <span style="font-family:var(--font-hand);font-size:14px;min-width:38px;text-align:center">{{ setStart }}</span>
+        <span style="color:var(--ink-soft)">〜</span>
+        <span style="font-family:var(--font-hand);font-size:14px;min-width:38px;text-align:center">{{ setEnd }}</span>
+        <button onClick="{{ onEndPlus }}" style="{{ stepBtnStyle }}">＋</button>
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div style="font-size:13px;color:var(--ink);margin-bottom:8px">文字サイズ</div>
+        <div style="display:flex;gap:8px">
+          <sc-for list="{{ fontOptions }}" as="f" hint-placeholder-count="3">
+            <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--rule);border-radius:10px;margin-bottom:11px">
+        <div style="flex:1">
+          <div style="font-size:14px;color:var(--ink);font-weight:500">Google カレンダー連携</div>
+          <div style="font-size:11px;color:var(--ink-soft);margin-top:2px">{{ calStatusLabel }}</div>
+        </div>
+        <button onClick="{{ onToggleCal }}" style="{{ calBtnStyle }}">{{ calBtnLabel }}</button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--rule);border-radius:10px;margin-bottom:18px">
+        <div style="flex:1">
+          <div style="font-size:14px;color:var(--ink);font-weight:500">AI 機能（外部送信）</div>
+          <div style="font-size:11px;color:var(--ink-soft);margin-top:2px">{{ aiStatusLabel }}</div>
+        </div>
+        <button onClick="{{ onToggleAi }}" style="{{ aiToggleStyle }}">{{ aiToggleLabel }}</button>
+      </div>
+
+      <button onClick="{{ onLogout }}" style="width:100%;padding:11px;border:1px solid var(--rule);border-radius:999px;background:#fff;color:var(--ink-soft);font-size:13px;cursor:pointer">ログアウト</button>
+    </div>
+  </sc-if>
+
+  <!-- ===== Completion log sheet ===== -->
+  <sc-if value="{{ logOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ onLogClose }}" style="position:fixed;inset:0;background:rgba(94,68,60,.28);z-index:60;display:flex;align-items:flex-end;justify-content:center"></div>
+    <div style="{{ sheetStyle }}">
+      <div style="display:flex;align-items:center;margin-bottom:6px">
+        <span style="font-family:var(--font-hand);font-size:18px;color:var(--ink-strong)">完了ログ</span>
+        <div style="flex:1"></div>
+        <button onClick="{{ onLogClose }}" style="background:none;border:none;font-size:22px;color:var(--ink-soft);cursor:pointer;line-height:1">×</button>
+      </div>
+      <p style="font-size:12px;color:var(--ink-soft);margin:0 0 14px;line-height:1.6">剥がした付箋の控え。<strong>3か月保持</strong>で自動的に消えます。</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ logItems }}" as="l" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;background:var(--surface-paper);border:1px solid var(--rule);border-radius:8px;padding:9px 11px">
+            <span style="width:14px;height:14px;border-radius:4px;flex:none;background:{{ l.bg }}"></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-hand);font-size:14px;color:var(--ink);text-decoration:line-through;text-decoration-color:var(--ink-soft)">{{ l.text }}</div>
+              <div style="font-size:10px;color:var(--ink-soft)">{{ l.when }}</div>
+            </div>
+            <button onClick="{{ l.onRestore }}" style="font-size:12px;color:var(--ink-strong);background:var(--paper);border:1px solid var(--ink);border-radius:999px;padding:5px 13px;cursor:pointer;font-family:var(--font-hand)">戻す</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{ logEmpty }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align:center;color:var(--ink-soft);font-size:13px;padding:24px 0;font-family:var(--font-hand)">まだ完了ログはありません</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  // ---------- setup ----------
+  state = this.loadInitial();
+
+  pad(n){ return String(n).padStart(2,'0'); }
+  keyOf(d){ return d.getFullYear()+'-'+this.pad(d.getMonth()+1)+'-'+this.pad(d.getDate()); }
+  addDays(base,n){ const d=new Date(base); d.setDate(d.getDate()+n); return d; }
+  wdJP(dateStr){ const d=new Date(dateStr+'T00:00:00'); return '日月火水木金土'[d.getDay()]; }
+
+  fresh(){
+    const now = new Date();
+    const today = this.keyOf(now);
+    const tomo = this.keyOf(this.addDays(now,1));
+    const dow = (now.getDay()+6)%7;          // Monday=0
+    const week = []; for(let i=0;i<7;i++) week.push(this.keyOf(this.addDays(now,-dow+i)));
+    const months = []; for(let i=0;i<16;i++) months.push(this.keyOf(this.addDays(now,i)));
+    const dueAbs = (dateStr,h,m)=> new Date(dateStr+'T'+this.pad(h)+':'+this.pad(m||0)+':00').getTime();
+    const dueRel = (h)=> now.getTime()+h*3600000;
+
+    let seq = 0;
+    const n = (text,color,duration,placement,due)=>{ const id='n'+(++seq); return [id,{id,text,memo:'',color,duration,dueAt:due??null,status:placement.view==='inbox'?'todo':'placed',placement,order:seq}]; };
+
+    const list = [
+      // --- today (daily) ---
+      n('メールチェック','sky',30,{view:'daily',date:today,startMin:9*60}),
+      n('商談準備（A社）','rose',45,{view:'daily',date:today,startMin:10*60}),
+      n('A社 オンライン商談','rose',60,{view:'daily',date:today,startMin:11*60}, dueAbs(today,11,0)),
+      n('見積書ドラフト','sky',90,{view:'daily',date:today,startMin:14*60}),
+      n('日報を書く','sky',20,{view:'daily',date:today,startMin:16*60+30}),
+      // --- this week (weekly) ---
+      n('請求書を送付','sky',20,{view:'weekly',date:week[2],startMin:13*60}, dueAbs(week[2],17,0)),
+      n('チーム定例の準備','peach',30,{view:'weekly',date:week[3],startMin:10*60}),
+      n('契約書レビュー','rose',45,{view:'weekly',date:week[4],startMin:null}, dueAbs(week[4],18,0)),
+      n('採用面談メモ整理','sky',30,{view:'weekly',date:week[1],startMin:15*60}),
+      // --- inbox pile ---
+      n('経費精算をする','leaf',15,{view:'inbox',date:null,startMin:null}),
+      n('プレゼン資料を作成','sky',60,{view:'inbox',date:null,startMin:null}, dueRel(72)),
+      n('山田部長に電話','rose',15,{view:'inbox',date:null,startMin:null}),
+      n('議事録をまとめる','sky',45,{view:'inbox',date:null,startMin:null}, dueRel(-18)),
+      n('健康診断の予約','leaf',15,{view:'inbox',date:null,startMin:null}),
+      n('名刺を発注','sky',10,{view:'inbox',date:null,startMin:null}),
+      n('来月の出張を手配','rose',30,{view:'inbox',date:null,startMin:null}, dueRel(120)),
+      n('メルマガ原稿チェック','peach',20,{view:'inbox',date:null,startMin:null}, dueRel(16)),
+    ];
+    const notes = {}; list.forEach(([id,o])=> notes[id]=o);
+
+    const cal = [
+      {id:'c1',text:'ランチMTG（鈴木さん）',date:today,startMin:12*60,duration:60},
+      {id:'c2',text:'部署 定例会議',date:today,startMin:17*60,duration:60},
+      {id:'c3',text:'取引先 訪問',date:week[3],startMin:14*60,duration:90},
+    ];
+
+    return {
+      loggedIn:false, loginEmail:'', loginPw:'',
+      view:'daily', dailyDate:today, weekOffset:0, monthOffset:0,
+      today, tomo, week, months, calEvents:cal,
+      notes, completionLog:[], seq,
+      settings:{ dayStart:8, dayEnd:21, fontScale:1 },
+      calendarConnected:false, aiEnabled:true,
+      wide: (typeof window!=='undefined' && window.innerWidth>=860),
+      drag:null, selectedNoteId:null,
+      aiOpen:false, aiStage:0, settingsOpen:false, logOpen:false,
+      cmpText:'', cmpColor:'sky', cmpDur:15,
+    };
+  }
+
+  loadInitial(){
+    const base = this.fresh();
+    try {
+      const raw = localStorage.getItem('anakichi_v1');
+      if(raw){
+        const s = JSON.parse(raw);
+        return Object.assign(base, {
+          loggedIn: !!s.loggedIn,
+          notes: s.notes || base.notes,
+          completionLog: s.completionLog || [],
+          settings: Object.assign(base.settings, s.settings||{}),
+          calendarConnected: !!s.calendarConnected,
+          aiEnabled: s.aiEnabled!==undefined ? s.aiEnabled : true,
+          view: s.view || 'daily',
+          seq: s.seq || base.seq,
+        });
+      }
+    } catch(e){}
+    return base;
+  }
+
+  save(){
+    try {
+      const s = this.state;
+      localStorage.setItem('anakichi_v1', JSON.stringify({
+        loggedIn:s.loggedIn, notes:s.notes, completionLog:s.completionLog,
+        settings:s.settings, calendarConnected:s.calendarConnected,
+        aiEnabled:s.aiEnabled, view:s.view, seq:s.seq,
+      }));
+    } catch(e){}
+  }
+
+  componentDidMount(){
+    window.addEventListener('pointermove', this.onMove, {passive:false});
+    window.addEventListener('pointerup', this.onUp);
+    window.addEventListener('pointercancel', this.onUp);
+    this._onResize = ()=>{ const w = window.innerWidth>=860; if(w!==this.state.wide) this.setState({wide:w}); };
+    window.addEventListener('resize', this._onResize);
+  }
+  componentWillUnmount(){
+    window.removeEventListener('pointermove', this.onMove);
+    window.removeEventListener('pointerup', this.onUp);
+    window.removeEventListener('pointercancel', this.onUp);
+    window.removeEventListener('resize', this._onResize);
+  }
+
+  // ---------- drag ----------
+  handleDown(id, e){
+    if(e.button!=null && e.button!==0) return;
+    const note = this.state.notes[id];
+    if(!note) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    this.down = { id, sx:e.clientX, sy:e.clientY, offX:e.clientX-r.left, offY:e.clientY-r.top, w:r.width, h:r.height, moved:false };
+  }
+  onMove = (e)=>{
+    if(!this.down) return;
+    const dx = e.clientX-this.down.sx, dy = e.clientY-this.down.sy;
+    if(!this.down.moved){ if(Math.hypot(dx,dy)<6) return; this.down.moved=true; }
+    if(e.cancelable) e.preventDefault();
+    const over = this.hitDrop(e.clientX, e.clientY);
+    this.setState({ drag:{ id:this.down.id, x:e.clientX-this.down.offX, y:e.clientY-this.down.offY, w:this.down.w, over: over?over.kind:null } });
+  };
+  onUp = (e)=>{
+    if(this.down){
+      if(this.down.moved){
+        this.drop(e.clientX, e.clientY, this.down.id);
+        this._lastTap = null;
+      } else {
+        // single press does nothing; a second press within 350ms = edit (double-click / double-tap)
+        const id = this.down.id, now = Date.now();
+        if(this._lastTap && this._lastTap.id===id && now-this._lastTap.t<350){
+          this._lastTap = null;
+          this.openEditor(id);
+        } else {
+          this._lastTap = { id, t:now };
+        }
+      }
+    }
+    this.down = null;
+    if(this.state.drag) this.setState({drag:null});
+  };
+  hitDrop(x,y){
+    const el = document.elementFromPoint(x,y);
+    if(!el || !el.closest) return null;
+    const t = el.closest('[data-drop]');
+    if(!t) return null;
+    return { kind:t.dataset.drop, date:t.dataset.date||null, el:t };
+  }
+  drop(x,y,id){
+    const hit = this.hitDrop(x,y);
+    if(!hit){ this.setState({drag:null}); return; }
+    const k = hit.kind;
+    if(k==='done'){ this.complete(id); return; }
+    if(k==='inbox'){ this.placeNote(id,{view:'inbox',date:null,startMin:null}); return; }
+    const rect = hit.el.getBoundingClientRect();
+    if(k==='daily'){ this.placeNote(id,{view:'daily',date:hit.date,startMin:this.yToMin(y-rect.top)}); return; }
+    if(k==='weekly'){ this.placeNote(id,{view:'weekly',date:hit.date,startMin:this.xToMin(x-rect.left,rect.width)}); return; }
+    if(k==='weekly-untimed'){ this.placeNote(id,{view:'weekly',date:hit.date,startMin:null}); return; }
+    if(k==='monthly'){
+      const note=this.state.notes[id]; const v=(note&&note.placement.view&&note.placement.view!=='inbox')?note.placement.view:'weekly';
+      this.placeNote(id,{view:v,date:hit.date,startMin:this.xToMin(x-rect.left,rect.width)}); return;
+    }
+    this.setState({drag:null});
+  }
+  yToMin(py){
+    const {dayStart,dayEnd}=this.state.settings;
+    let m = dayStart*60 + py;            // 1px = 1min (hour=60px)
+    m = Math.round(m/15)*15;
+    return Math.max(dayStart*60, Math.min(dayEnd*60, m));
+  }
+  xToMin(px,width){
+    const span=(22-7)*60; let m = 7*60 + (px/width)*span;
+    m = Math.round(m/15)*15;
+    return Math.max(7*60, Math.min(22*60, m));
+  }
+
+  // ---------- mutations ----------
+  placeNote(id, placement){
+    this.setState(s=>{
+      const note = s.notes[id]; if(!note) return {};
+      let maxOrder=0; Object.values(s.notes).forEach(o=>{ if(o.placement.view===placement.view && o.placement.date===placement.date) maxOrder=Math.max(maxOrder,o.order); });
+      const notes={...s.notes, [id]:{...note, placement, status: placement.view==='inbox'?'todo':'placed', order:maxOrder+1}};
+      return {notes, drag:null};
+    }, this.save);
+  }
+  complete(id){
+    this.setState(s=>{
+      const note=s.notes[id]; if(!note) return {drag:null};
+      const notes={...s.notes}; delete notes[id];
+      const entry={ id, snapshot:note, completedAt:Date.now(), purgeAfter:Date.now()+90*86400000 };
+      return { notes, completionLog:[entry, ...s.completionLog], drag:null, selectedNoteId: s.selectedNoteId===id?null:s.selectedNoteId };
+    }, this.save);
+  }
+  restore(id){
+    this.setState(s=>{
+      const entry=s.completionLog.find(l=>l.id===id); if(!entry) return {};
+      const note={...entry.snapshot, placement:{view:'inbox',date:null,startMin:null}, status:'todo'};
+      return { notes:{...s.notes,[id]:note}, completionLog:s.completionLog.filter(l=>l.id!==id) };
+    }, this.save);
+  }
+  updateNote(id, patch){
+    this.setState(s=>({ notes:{...s.notes,[id]:{...s.notes[id],...patch}} }), this.save);
+  }
+  deleteNote(id){
+    this.setState(s=>{ const notes={...s.notes}; delete notes[id]; return {notes, selectedNoteId:null}; }, this.save);
+  }
+  addNew(){
+    const t=this.state.cmpText.trim(); if(!t) return;
+    this.setState(s=>{
+      const seq=s.seq+1; const id='u'+seq;
+      const note={id,text:t,memo:'',color:s.cmpColor,duration:s.cmpDur,dueAt:null,status:'todo',placement:{view:'inbox',date:null,startMin:null},order:seq+1000};
+      return { notes:{...s.notes,[id]:note}, seq, cmpText:'' };
+    }, this.save);
+  }
+  openEditor(id){ if(this.state.notes[id]) this.setState({selectedNoteId:id}); }
+  setView(v){ this.setState({view:v}, this.save); }
+
+  // ---------- formatting ----------
+  fmtDur(m){ if(m<60) return m+'分'; const h=Math.floor(m/60), mm=m%60; return h+'時間'+(mm?mm+'分':''); }
+  timeLabel(min){ return this.pad(Math.floor(min/60))+':'+this.pad(min%60); }
+  aging(note){
+    // returns { border, badge, urgent } — aging lives on BORDER, category on bg
+    if(!note.dueAt) return { border:'1px solid rgba(120,88,80,.12)', badge:null };
+    const diffH=(note.dueAt-Date.now())/3.6e6;
+    const d=new Date(note.dueAt); const hm=this.pad(d.getHours())+':'+this.pad(d.getMinutes());
+    if(diffH<0) return { border:'2px solid var(--peach-deep)', badge:'期限切れ' };
+    if(diffH<24) return { border:'2px dashed var(--peach-deep)', badge:'今日 '+hm };
+    if(diffH<48) return { border:'1.5px solid var(--peach-deep)', badge:'明日 '+hm };
+    return { border:'1px solid rgba(217,138,110,.45)', badge:(d.getMonth()+1)+'/'+d.getDate() };
+  }
+
+  // ---------- vm builders ----------
+  noteBg(color){ return 'var(--'+color+')'; }
+  badgeStyle(){ return { fontSize:'10px', color:'var(--peach-deep)', border:'1px solid var(--peach-deep)', borderRadius:'4px', padding:'0 5px', lineHeight:'15px', whiteSpace:'nowrap' }; }
+
+  vmChip(note){
+    const ag=this.aging(note);
+    return {
+      id:note.id, text:note.text,
+      durLabel:this.fmtDur(note.duration),
+      hasBadge: !!ag.badge, badge: ag.badge||'', badgeStyle:this.badgeStyle(),
+      style:{ position:'relative', width:'160px', background:this.noteBg(note.color), borderRadius:'5px',
+        borderTop:'2px solid rgba(255,255,255,.5)', border:ag.border, padding:'8px 11px',
+        boxShadow:'var(--shadow-note)', transform:'rotate(-0.6deg)', cursor:'grab', touchAction:'none' },
+      onDown:(e)=>this.handleDown(note.id,e),
+    };
+  }
+
+  packDaily(items){
+    items.sort((a,b)=> a.start-b.start || a.end-b.end);
+    let cluster=[], clusterEnd=-1;
+    const flush=()=>{ const cols=[]; cluster.forEach(it=>{ let c=0; for(;c<cols.length;c++){ if(cols[c]<=it.start){cols[c]=it.end;break;} } if(c===cols.length) cols.push(it.end); it.col=c; }); const total=cols.length; cluster.forEach(it=> it.total=total); cluster=[]; };
+    items.forEach(it=>{ if(cluster.length && it.start>=clusterEnd){ flush(); clusterEnd=-1; } cluster.push(it); clusterEnd=Math.max(clusterEnd,it.end); });
+    if(cluster.length) flush();
+  }
+
+  renderVals(){
+    const s=this.state, st=s.settings;
+    const scale=st.fontScale;
+    const px=(v)=> Math.round(v*scale)+'px';
+    const appStyle={ minHeight:'100vh', background:'var(--bg-app)', fontFamily:'var(--font-body)', color:'var(--ink)',
+      userSelect:'none', WebkitUserSelect:'none', WebkitTouchCallout:'none',
+      '--text-xs':px(12), '--text-sm':px(13), '--text-base':px(15), '--text-md':px(16), '--text-lg':px(18) };
+
+    const v=s.view;
+    const out={
+      appStyle, loggedIn:s.loggedIn, loggedOut:!s.loggedIn,
+      wide:s.wide, narrow:!s.wide,
+      brandDate: (()=>{ const d=new Date(s.today+'T00:00:00'); return (d.getMonth()+1)+'月'+d.getDate()+'日（'+this.wdJP(s.today)+'）'; })(),
+      shellStyle:{ display:'flex', height:'100vh', minHeight:0 },
+      isInbox:v==='inbox', isDaily:v==='daily', isWeekly:v==='weekly', isMonthly:v==='monthly',
+      stepBtnStyle:{ width:'30px', height:'30px', borderRadius:'50%', border:'1px solid var(--rule)', background:'#fff', color:'var(--ink)', fontSize:'16px', cursor:'pointer', lineHeight:1, flex:'none' },
+      ghostBtnStyle:{ padding:'9px 16px', border:'1px solid var(--rule)', borderRadius:'999px', background:'#fff', color:'var(--ink-soft)', fontSize:'13px', cursor:'pointer', flex:'none' },
+      ghostBtnStyle2:{ padding:'11px 18px', border:'1.5px solid var(--ink)', borderRadius:'999px', background:'var(--paper)', color:'var(--ink-strong)', fontFamily:'var(--font-hand)', fontSize:'14px', cursor:'pointer', flex:'none' },
+      toolChipStyle:{ padding:'6px 12px', border:'1px solid var(--rule)', borderRadius:'999px', background:'#fff', color:'var(--ink)', fontSize:'12px', cursor:'pointer', flex:'none' },
+      toolRailStyle:{ textAlign:'left', padding:'9px 12px', border:'1px solid var(--rule)', borderRadius:'8px', background:'#fff', color:'var(--ink)', fontSize:'13px', cursor:'pointer' },
+      sheetStyle:{ position:'fixed', left:'50%', bottom:0, transform:'translateX(-50%)', width:'100%', maxWidth:'460px', maxHeight:'88vh', overflowY:'auto', background:'var(--surface-paper)', borderRadius:'16px 16px 0 0', borderTop:'1px solid var(--rule)', boxShadow:'0 -10px 40px rgba(94,68,60,.18)', padding:'18px 20px calc(22px + env(safe-area-inset-bottom))', zIndex:61, animation:'anaRise .2s ease both' },
+      // login
+      loginEmail:s.loginEmail, loginPw:s.loginPw,
+      onLoginEmail:(e)=>this.setState({loginEmail:e.target.value}),
+      onLoginPw:(e)=>this.setState({loginPw:e.target.value}),
+      onLogin:()=>this.setState({loggedIn:true}, this.save),
+      // tools
+      onOpenAI:()=>this.setState({aiOpen:true, aiStage:0}),
+      onOpenLog:()=>this.setState({logOpen:true}),
+      onOpenSettings:()=>this.setState({settingsOpen:true}),
+    };
+
+    // nav
+    const navDefs=[['inbox','置き場','置'],['monthly','月','月'],['weekly','週','週'],['daily','日','日']];
+    out.navItems = navDefs.map(([key,label,icon])=>{
+      const on=v===key;
+      return { key,label,icon, onClick:()=>this.setView(key),
+        railStyle:{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 12px', borderRadius:'9px', border:on?'1px solid var(--ink)':'1px solid transparent', background:on?'var(--paper)':'transparent', color:on?'var(--ink-strong)':'var(--ink)', cursor:'pointer' },
+        tabStyle:{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'3px', padding:'6px 0', borderRadius:'9px', border:'none', background:on?'var(--paper)':'transparent', color:on?'var(--ink-strong)':'var(--ink-soft)', cursor:'pointer' } };
+    });
+
+    // ----- INBOX -----
+    const inbox = Object.values(s.notes).filter(n=>n.placement.view==='inbox').sort((a,b)=>a.order-b.order);
+    out.inboxNotes = inbox.map(n=>this.vmChip(n));
+    out.inboxEmpty = inbox.length===0;
+    out.inboxCountLabel = inbox.length+' 枚';
+    out.cmpText=s.cmpText; out.cmpDurLabel=this.fmtDur(s.cmpDur);
+    out.onCmpText=(e)=>this.setState({cmpText:e.target.value});
+    out.onCmpKey=(e)=>{ if(e.key==='Enter') this.addNew(); };
+    out.onCmpDurMinus=()=>this.setState(p=>({cmpDur:Math.max(5,p.cmpDur-5)}));
+    out.onCmpDurPlus=()=>this.setState(p=>({cmpDur:p.cmpDur+5}));
+    out.onCmpAdd=()=>this.addNew();
+    const swatch=(key,active,on)=>({ width:'26px', height:'26px', borderRadius:'5px', cursor:'pointer', background:'var(--'+key+')', border: active?'2px solid var(--ink)':'2px solid transparent', boxShadow:'var(--shadow-note)' });
+    const CATS=[['rose','約束・商談'],['sky','タスク・連絡'],['leaf','生活・健康'],['peach','強調・今']];
+    out.cmpColors=CATS.map(([key,label])=>({ key,label, style:swatch(key,s.cmpColor===key), onClick:()=>this.setState({cmpColor:key}) }));
+
+    // ----- nav controls (shared) -----
+    out.navArrowStyle={ width:'34px', height:'34px', borderRadius:'50%', border:'1px solid var(--rule)', background:'#fff', color:'var(--ink-strong)', fontSize:'18px', lineHeight:1, cursor:'pointer', flex:'none', display:'flex', alignItems:'center', justifyContent:'center' };
+    const todayBtn=(active)=>({ padding:'6px 16px', borderRadius:'999px', border: active?'1.5px solid var(--ink)':'1px solid var(--rule)', background: active?'var(--paper)':'#fff', color: active?'var(--ink-strong)':'var(--ink-soft)', fontFamily:'var(--font-hand)', fontSize:'13px', cursor:'pointer', flex:'none' });
+
+    // ----- DAILY -----
+    out.dailyDate=s.dailyDate;
+    out.dailyDateLabel=(()=>{ const d=new Date(s.dailyDate+'T00:00:00'); return (d.getMonth()+1)+'/'+d.getDate()+'（'+this.wdJP(s.dailyDate)+'）'; })();
+    out.todayBtnStyle = todayBtn(s.dailyDate===s.today);
+    out.onDayToday=()=>this.setState({dailyDate:s.today});
+    out.onDayPrev=()=>this.setState(p=>({dailyDate:this.keyOf(this.addDays(new Date(p.dailyDate+'T00:00:00'),-1))}));
+    out.onDayNext=()=>this.setState(p=>({dailyDate:this.keyOf(this.addDays(new Date(p.dailyDate+'T00:00:00'),1))}));
+    const HH=60, hours=[];
+    for(let h=st.dayStart; h<=st.dayEnd; h++){
+      const band=(h===12||h===13);
+      hours.push({ h, label:h+':00',
+        gutterStyle:{ height:HH+'px', fontFamily:'var(--font-hand)', fontSize:'11px', color:'var(--ink-soft)', padding:'3px 0 0 7px', boxSizing:'border-box' },
+        cellStyle:{ height:HH+'px', borderTop:h===st.dayStart?'none':'1px dashed var(--rule)', background:band?'var(--hour-band)':'transparent', boxSizing:'border-box' } });
+    }
+    out.dailyHours=hours;
+    const gridH=(st.dayEnd-st.dayStart+1)*HH;
+    out.dailyGridStyle={ position:'relative', flex:1, minWidth:0, height:gridH+'px' };
+    out.dailyNotesLayerStyle={ position:'absolute', inset:0, pointerEvents: s.drag?'none':'auto' };
+    {
+      const items=[];
+      Object.values(s.notes).forEach(n=>{ if(n.placement.view==='daily' && n.placement.date===s.dailyDate && n.placement.startMin!=null){ items.push({ ref:n, locked:false, start:n.placement.startMin, end:n.placement.startMin+n.duration }); } });
+      if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===s.dailyDate){ items.push({ ref:c, locked:true, start:c.startMin, end:c.startMin+c.duration }); } });
+      this.packDaily(items);
+      out.dailyNotes = items.map(it=>{
+        const n=it.ref; const top=(it.start - st.dayStart*60); const height=Math.max(it.end-it.start, 26);
+        const total=it.total||1, col=it.col||0;
+        const base={ position:'absolute', top:Math.max(0,top)+'px', height:height+'px',
+          left:'calc('+(col*100/total)+'% + 3px)', width:'calc('+(100/total)+'% - 6px)',
+          borderRadius:'5px', padding:'5px 7px', boxSizing:'border-box', overflow:'hidden',
+          boxShadow:'var(--shadow-note)', touchAction:'none' };
+        if(it.locked){
+          Object.assign(base,{ background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', cursor:'default' });
+          return { id:n.id, text:n.text, sub:'G  '+this.timeLabel(it.start), style:base, onDown:undefined };
+        }
+        const ag=this.aging(n);
+        Object.assign(base,{ background:this.noteBg(n.color), borderTop:'2px solid rgba(255,255,255,.45)', border:ag.border, cursor:'grab' });
+        const dim = (s.drag && s.drag.id===n.id);
+        if(dim) base.opacity=0.3;
+        return { id:n.id, text:n.text, sub:this.timeLabel(it.start)+' ・ '+this.fmtDur(n.duration), style:base, onDown:(e)=>this.handleDown(n.id,e) };
+      });
+    }
+
+    // ----- WEEKLY -----
+    const baseNow=new Date(s.today+'T00:00:00');
+    const dow=(baseNow.getDay()+6)%7;
+    const weekStart=this.addDays(baseNow, -dow + s.weekOffset*7);
+    const week=[]; for(let i=0;i<7;i++) week.push(this.keyOf(this.addDays(weekStart,i)));
+    out.weekRangeLabel=(()=>{ const a=new Date(week[0]+'T00:00:00'), b=new Date(week[6]+'T00:00:00'); return (a.getMonth()+1)+'/'+a.getDate()+' 〜 '+(b.getMonth()+1)+'/'+b.getDate(); })();
+    out.weekTodayStyle = todayBtn(s.weekOffset===0);
+    out.onWeekToday=()=>this.setState({weekOffset:0});
+    out.onWeekPrev=()=>this.setState(p=>({weekOffset:p.weekOffset-1}));
+    out.onWeekNext=()=>this.setState(p=>({weekOffset:p.weekOffset+1}));
+    const marks=[7,10,13,16,19,22];
+    out.rulerHours = marks.map((h,i)=>{ const left=(h-7)/15*100; const tx=i===0?'0':(i===marks.length-1?'-100%':'-50%'); return { label:h+'時', style:{ position:'absolute', top:0, left:left+'%', transform:'translateX('+tx+')', fontSize:'10px', color:'var(--ink-soft)', whiteSpace:'nowrap' } }; });
+    const guides=[]; for(let h=7;h<=22;h++){ const left=(h-7)/15*100; const major=((h-7)%3===0); guides.push({ style:{ position:'absolute', top:0, bottom:0, left:left+'%', width:0, borderLeft: major?'1px dashed var(--ink-soft)':'1px solid var(--rule)', opacity: major?0.55:0.4, pointerEvents:'none' } }); }
+    out.timeGuides = guides;
+    const span=(22-7)*60;
+    const horizNote=(n, height)=>{
+      const start=n.placement.startMin; const left=(start-7*60)/span*100; const width=Math.max(n.duration/span*100, 3);
+      const ag=this.aging(n); const dim=(s.drag&&s.drag.id===n.id);
+      return { id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e),
+        style:{ position:'absolute', top:'4px', height:(height-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px',
+          background:this.noteBg(n.color), border:ag.border, borderRadius:'5px', padding:'0 6px', display:'flex', alignItems:'center',
+          fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', boxShadow:'var(--shadow-note)', overflow:'visible',
+          whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)',
+          cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } };
+    };
+    const TRK=52;
+    out.weekDays = week.map(dk=>{
+      const isToday=dk===s.today;
+      const timedNotes=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin!=null) timedNotes.push(horizNote(n,TRK)); });
+      if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===dk){ const left=(c.startMin-7*60)/span*100, width=Math.max(c.duration/span*100,3); timedNotes.push({ id:c.id, text:c.text, onDown:undefined, style:{ position:'absolute', top:'4px', height:(TRK-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px', background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', borderRadius:'5px', padding:'0 6px', display:'flex', alignItems:'center', fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', overflow:'visible', whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)' } }); } });
+      const untimed=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin==null){ const dim=(s.drag&&s.drag.id===n.id); untimed.push({ id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e), style:{ background:this.noteBg(n.color), border:this.aging(n).border, borderRadius:'5px', padding:'4px 9px', fontFamily:'var(--font-hand)', fontSize:'12px', color:'var(--ink)', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none', transform:'rotate(-0.6deg)', opacity:dim?0.3:1 } }); } });
+      const d=new Date(dk+'T00:00:00');
+      return { date:dk, day:d.getDate(), weekday:this.wdJP(dk), dateColor:isToday?'var(--peach-deep)':'var(--ink-strong)',
+        rowStyle:{ display:'flex', borderTop: dk===week[0]?'none':'1px solid var(--rule)', background:isToday?'rgba(248,208,192,.10)':'transparent' },
+        trackStyle:{ position:'relative', height:TRK+'px' },
+        timed:timedNotes, untimed };
+    });
+
+    // ----- MONTHLY -----
+    const monthStart=this.addDays(baseNow, s.monthOffset*16);
+    const months=[]; for(let i=0;i<16;i++) months.push(this.keyOf(this.addDays(monthStart,i)));
+    out.monthRangeLabel=(()=>{ const a=new Date(months[0]+'T00:00:00'), b=new Date(months[15]+'T00:00:00'); return (a.getMonth()+1)+'/'+a.getDate()+' 〜 '+(b.getMonth()+1)+'/'+b.getDate(); })();
+    out.monthTodayStyle = todayBtn(s.monthOffset===0);
+    out.onMonthToday=()=>this.setState({monthOffset:0});
+    out.onMonthPrev=()=>this.setState(p=>({monthOffset:p.monthOffset-1}));
+    out.onMonthNext=()=>this.setState(p=>({monthOffset:p.monthOffset+1}));
+    const MTRK=38;
+    out.monthDays = months.map(dk=>{
+      const isToday=dk===s.today;
+      const timed=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.date===dk && n.placement.startMin!=null && n.placement.view!=='inbox') timed.push(horizNote(n,MTRK)); });
+      if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===dk){ const left=(c.startMin-7*60)/span*100, width=Math.max(c.duration/span*100,3); timed.push({ id:c.id, text:c.text, onDown:undefined, style:{ position:'absolute', top:'4px', height:(MTRK-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px', background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', borderRadius:'4px', padding:'0 6px', display:'flex', alignItems:'center', fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', overflow:'visible', whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)' } }); } });
+      const d=new Date(dk+'T00:00:00');
+      return { date:dk, day:d.getDate(), weekday:this.wdJP(dk), dateColor:isToday?'var(--peach-deep)':'var(--ink-strong)',
+        rowStyle:{ display:'flex', alignItems:'stretch', borderTop: dk===months[0]?'none':'1px solid var(--rule)', background:isToday?'rgba(248,208,192,.12)':((d.getDay()===0||d.getDay()===6)?'var(--zebra)':'transparent') },
+        trackStyle:{ position:'relative', flex:1, minWidth:0, height:MTRK+'px' },
+        timed };
+    });
+
+    // ----- TRAY -----
+    out.showTray = (v==='daily'||v==='weekly');
+    out.trayNotes = inbox.map(n=>({ id:n.id, text:n.text, durLabel:this.fmtDur(n.duration), onDown:(e)=>this.handleDown(n.id,e),
+      style:{ flex:'none', width:'138px', background:this.noteBg(n.color), border:this.aging(n).border, borderTop:'2px solid rgba(255,255,255,.45)', borderRadius:'5px', padding:'7px 9px', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none', transform:'rotate(-0.6deg)' } }));
+    out.trayEmpty = inbox.length===0;
+
+    // ----- DRAG ghost + pads -----
+    out.dragging = !!s.drag;
+    if(s.drag){
+      const note=s.notes[s.drag.id];
+      out.ghostText = note?note.text:'';
+      out.ghostStyle={ position:'fixed', left:s.drag.x+'px', top:s.drag.y+'px', width:(s.drag.w||140)+'px', maxWidth:'180px', background:note?this.noteBg(note.color):'var(--sky)', borderRadius:'5px', borderTop:'2px solid rgba(255,255,255,.5)', padding:'8px 11px', fontFamily:'var(--font-hand)', fontSize:'13px', color:'var(--ink)', boxShadow:'var(--shadow-note-raised)', transform:'rotate(-2deg) scale(1.04)', pointerEvents:'none', zIndex:80, opacity:.96 };
+      const padBase={ position:'fixed', bottom:'26px', width:'120px', height:'70px', borderRadius:'14px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'2px', zIndex:79, pointerEvents:'none', fontFamily:'var(--font-body)' };
+      out.donePadStyle={ ...padBase, left:'22px', background: s.drag.over==='done'?'var(--leaf)':'var(--surface-paper)', border:'2px dashed var(--leaf-deep)', color:'var(--ink-strong)', boxShadow:'var(--shadow-panel)' };
+      out.inboxPadStyle={ ...padBase, right:'22px', background: s.drag.over==='inbox'?'var(--sky)':'var(--surface-paper)', border:'2px dashed var(--sky-deep)', color:'var(--ink-strong)', boxShadow:'var(--shadow-panel)' };
+    } else {
+      out.ghostStyle={}; out.ghostText=''; out.donePadStyle={}; out.inboxPadStyle={};
+    }
+
+    // ----- EDITOR -----
+    const sel=s.selectedNoteId?s.notes[s.selectedNoteId]:null;
+    out.editorOpen=!!sel;
+    if(sel){
+      const id=sel.id;
+      out.edText=sel.text; out.edMemo=sel.memo||''; out.edDurLabel=this.fmtDur(sel.duration);
+      out.edColors=CATS.map(([key,label])=>({ key,label, style:swatch(key,sel.color===key), onClick:()=>this.updateNote(id,{color:key}) }));
+      out.edDue = sel.dueAt? (()=>{ const d=new Date(sel.dueAt); return d.getFullYear()+'-'+this.pad(d.getMonth()+1)+'-'+this.pad(d.getDate())+'T'+this.pad(d.getHours())+':'+this.pad(d.getMinutes()); })() : '';
+      out.onEdText=(e)=>this.updateNote(id,{text:e.target.value});
+      out.onEdMemo=(e)=>this.updateNote(id,{memo:e.target.value});
+      out.onEdDurMinus=()=>this.updateNote(id,{duration:Math.max(5,sel.duration-5)});
+      out.onEdDurPlus=()=>this.updateNote(id,{duration:sel.duration+5});
+      out.onEdDue=(e)=>{ const v2=e.target.value; this.updateNote(id,{dueAt: v2? new Date(v2).getTime():null}); };
+      out.onEdDueClear=()=>this.updateNote(id,{dueAt:null});
+      out.onEdComplete=()=>this.complete(id);
+      out.onEdToInbox=()=>{ this.placeNote(id,{view:'inbox',date:null,startMin:null}); this.setState({selectedNoteId:null}); };
+      out.onEdDelete=()=>this.deleteNote(id);
+      out.onEdClose=()=>this.setState({selectedNoteId:null});
+    } else {
+      out.edText=''; out.edMemo=''; out.edDurLabel=''; out.edColors=[]; out.edDue='';
+      out.onEdClose=()=>this.setState({selectedNoteId:null});
+    }
+
+    // ----- AI -----
+    out.aiOpen=s.aiOpen;
+    out.onAiClose=()=>this.setState({aiOpen:false});
+    out.aiMicLabel = s.aiStage===0?'● 録音する' : (s.aiStage===1?'…認識中' : '● もう一度');
+    out.aiMicStyle={ width:'200px', padding:'14px', borderRadius:'999px', border:'none', background: s.aiStage===1?'var(--peach)':'var(--ink-strong)', color: s.aiStage===1?'var(--ink-strong)':'#fff', fontFamily:'var(--font-hand)', fontSize:'15px', cursor:'pointer', animation: s.aiStage===1?'anaPulse 1s ease infinite':'none' };
+    out.aiHasTranscript = s.aiStage>=2;
+    out.aiTranscript = 'えっと、来週月曜までに提案書を仕上げて、田中さんに見積りの件で連絡、あと会議室の予約もしておかないと';
+    out.aiHasResults = s.aiStage>=2;
+    const aiRes=[{text:'提案書を仕上げる',color:'sky',dur:60},{text:'田中さんへ見積りの連絡',color:'rose',dur:15},{text:'会議室を予約する',color:'sky',dur:10}];
+    out.aiResults = aiRes.map(r=>({ text:r.text, bg:this.noteBg(r.color), durLabel:this.fmtDur(r.dur) }));
+    out.aiResultCount = aiRes.length+'枚';
+    out.onAiRecord=()=>{
+      if(s.aiStage===1) return;
+      this.setState({aiStage:1});
+      setTimeout(()=>this.setState({aiStage:2}), 1300);
+    };
+    out.onAiAddAll=()=>{
+      this.setState(p=>{ let seq=p.seq; const notes={...p.notes}; aiRes.forEach(r=>{ seq++; const id='ai'+seq; notes[id]={id,text:r.text,memo:'',color:r.color,duration:r.dur,dueAt:null,status:'todo',placement:{view:'inbox',date:null,startMin:null},order:seq+2000}; }); return {notes, seq, aiOpen:false, aiStage:0, view:'inbox'}; }, this.save);
+    };
+
+    // ----- SETTINGS -----
+    out.settingsOpen=s.settingsOpen;
+    out.onSetClose=()=>this.setState({settingsOpen:false});
+    out.setStart=st.dayStart+':00'; out.setEnd=st.dayEnd+':00';
+    out.onStartMinus=()=>this.setState(p=>({settings:{...p.settings, dayStart:Math.max(0,p.settings.dayStart-1)}}), this.save);
+    out.onEndPlus=()=>this.setState(p=>({settings:{...p.settings, dayEnd:Math.min(24,p.settings.dayEnd+1)}}), this.save);
+    out.fontOptions=[['小',0.9],['中',1],['大',1.15]].map(([label,sc])=>{ const on=Math.abs(st.fontScale-sc)<0.01; return { label, onClick:()=>this.setState(p=>({settings:{...p.settings,fontScale:sc}}), this.save), style:{ flex:1, padding:'9px', borderRadius:'8px', border:on?'1.5px solid var(--ink)':'1px solid var(--rule)', background:on?'var(--paper)':'#fff', color:on?'var(--ink-strong)':'var(--ink-soft)', fontFamily:'var(--font-hand)', fontSize:(14*sc)+'px', cursor:'pointer' } }; });
+    out.calStatusLabel = s.calendarConnected?'連携中（予定を読み込み中・モック）':'未接続';
+    out.calBtnLabel = s.calendarConnected?'解除':'接続する';
+    out.calBtnStyle={ padding:'8px 16px', borderRadius:'999px', border: s.calendarConnected?'1px solid var(--rule)':'none', background: s.calendarConnected?'#fff':'var(--ink-strong)', color: s.calendarConnected?'var(--ink-soft)':'#fff', fontSize:'13px', cursor:'pointer', flex:'none' };
+    out.onToggleCal=()=>this.setState(p=>({calendarConnected:!p.calendarConnected}), this.save);
+    out.aiStatusLabel = s.aiEnabled?'オン（デモでは実送信しません）':'オフ';
+    out.aiToggleLabel = s.aiEnabled?'オン':'オフ';
+    out.aiToggleStyle={ padding:'8px 16px', borderRadius:'999px', border:'1px solid '+(s.aiEnabled?'var(--leaf-deep)':'var(--rule)'), background: s.aiEnabled?'var(--leaf)':'#fff', color:'var(--ink-strong)', fontSize:'13px', cursor:'pointer', flex:'none' };
+    out.onToggleAi=()=>this.setState(p=>({aiEnabled:!p.aiEnabled}), this.save);
+    out.onLogout=()=>this.setState({loggedIn:false, settingsOpen:false}, this.save);
+
+    // ----- LOG -----
+    out.logOpen=s.logOpen;
+    out.onLogClose=()=>this.setState({logOpen:false});
+    out.logItems = s.completionLog.map(l=>{ const d=new Date(l.completedAt); return { id:l.id, text:l.snapshot.text, bg:this.noteBg(l.snapshot.color), when:(d.getMonth()+1)+'/'+d.getDate()+' '+this.pad(d.getHours())+':'+this.pad(d.getMinutes())+' 完了', onRestore:()=>this.restore(l.id) }; });
+    out.logEmpty = s.completionLog.length===0;
+
+    return out;
+  }
+}
+</script>
+</body>
+</html>

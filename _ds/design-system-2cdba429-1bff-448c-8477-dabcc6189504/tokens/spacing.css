@@ -1,0 +1,28 @@
+/* ===== あなきち手帳 — Spacing, radius, shadow tokens ===== */
+/* Rhythm derives from the planner's physical 8mm line spacing. */
+:root {
+  --u: 8px;             /* base unit — 行間8mm 由来 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* radii */
+  --r-pill: 999px;      /* pill headers, tab chips */
+  --r-panel: 12px;      /* paper panels */
+  --r-note: 5px;        /* sticky notes */
+  --r-sm: 4px;          /* small chips, brackets */
+
+  /* shadows — soft, warm, low */
+  --shadow-note: 0 2px 6px rgba(94, 68, 60, 0.16);
+  --shadow-note-raised: 0 6px 14px rgba(94, 68, 60, 0.2);
+  --shadow-panel: 0 10px 30px rgba(94, 68, 60, 0.07);
+  --shadow-paper-inset: 0 1px 0 #fff inset;
+
+  /* motion */
+  --ease-note: 0.18s ease; /* @kind other */
+}

@@ -1,0 +1,243 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "components/notes/**",
+              "components/paper/**",
+              "ui_kits/techo/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Klee One|Zen Kaku Gothic New))/i]",
+        "message": "Font not provided by the design system. Available: Klee One, Zen Kaku Gothic New."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='CategoryTab'] > JSXAttribute > JSXIdentifier[name!=/^(?:as|children|key|ref|className|style|children)$/]",
+        "message": "<CategoryTab> doesn't accept that prop. Declared props: as, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='HatchEvent'] > JSXAttribute > JSXIdentifier[name!=/^(?:as|children|key|ref|className|style|children)$/]",
+        "message": "<HatchEvent> doesn't accept that prop. Declared props: as, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Note'] > JSXAttribute > JSXIdentifier[name!=/^(?:color|rotate|lift|as|children|key|ref|className|style|children)$/]",
+        "message": "<Note> doesn't accept that prop. Declared props: color, rotate, lift, as, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Pill'] > JSXAttribute > JSXIdentifier[name!=/^(?:as|children|key|ref|className|style|children)$/]",
+        "message": "<Pill> doesn't accept that prop. Declared props: as, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='RingPanel'] > JSXAttribute > JSXIdentifier[name!=/^(?:as|children|key|ref|className|style|children)$/]",
+        "message": "<RingPanel> doesn't accept that prop. Declared props: as, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='TimeRailRow'] > JSXAttribute > JSXIdentifier[name!=/^(?:hour|band|bracket|children|key|ref|className|style|children)$/]",
+        "message": "<TimeRailRow> doesn't accept that prop. Declared props: hour, band, bracket, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ZebraList'] > JSXAttribute > JSXIdentifier[name!=/^(?:items|key|ref|className|style|children)$/]",
+        "message": "<ZebraList> doesn't accept that prop. Declared props: items."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {
+      "CategoryTab": {
+        "replaces": []
+      },
+      "HatchEvent": {
+        "replaces": []
+      },
+      "Note": {
+        "replaces": []
+      },
+      "Pill": {
+        "replaces": []
+      },
+      "RingPanel": {
+        "replaces": []
+      },
+      "TimeRailRow": {
+        "replaces": []
+      },
+      "ZebraList": {
+        "replaces": []
+      }
+    },
+    "tokens": [
+      "--bg-app",
+      "--border-hairline",
+      "--ease-note",
+      "--focus-ring",
+      "--font-body",
+      "--font-hand",
+      "--font-mono",
+      "--hole",
+      "--hour-band",
+      "--ink",
+      "--ink-soft",
+      "--ink-strong",
+      "--leading-body",
+      "--leading-tight",
+      "--leaf",
+      "--leaf-deep",
+      "--note-appointment",
+      "--note-focus",
+      "--note-life",
+      "--note-task",
+      "--paper",
+      "--paper-cool",
+      "--peach",
+      "--peach-deep",
+      "--r-note",
+      "--r-panel",
+      "--r-pill",
+      "--r-sm",
+      "--rose",
+      "--rose-deep",
+      "--rule",
+      "--shadow-note",
+      "--shadow-note-raised",
+      "--shadow-panel",
+      "--shadow-paper-inset",
+      "--sky",
+      "--sky-deep",
+      "--space-1",
+      "--space-2",
+      "--space-3",
+      "--space-4",
+      "--space-5",
+      "--space-6",
+      "--space-7",
+      "--space-8",
+      "--surface-daily",
+      "--surface-paper",
+      "--text-base",
+      "--text-body",
+      "--text-display",
+      "--text-h2",
+      "--text-h3",
+      "--text-heading",
+      "--text-lg",
+      "--text-md",
+      "--text-muted",
+      "--text-sm",
+      "--text-xs",
+      "--tracking-eyebrow",
+      "--u",
+      "--weight-bold",
+      "--weight-medium",
+      "--weight-regular",
+      "--zebra"
+    ],
+    "tokenKinds": {
+      "--paper": "color",
+      "--paper-cool": "color",
+      "--zebra": "color",
+      "--hour-band": "color",
+      "--rule": "color",
+      "--hole": "color",
+      "--ink": "color",
+      "--ink-strong": "color",
+      "--ink-soft": "color",
+      "--rose": "color",
+      "--rose-deep": "color",
+      "--sky": "color",
+      "--sky-deep": "color",
+      "--leaf": "color",
+      "--leaf-deep": "color",
+      "--peach": "color",
+      "--peach-deep": "color",
+      "--bg-app": "color",
+      "--surface-paper": "color",
+      "--surface-daily": "color",
+      "--text-body": "font",
+      "--text-heading": "font",
+      "--text-muted": "font",
+      "--border-hairline": "color",
+      "--focus-ring": "color",
+      "--note-appointment": "color",
+      "--note-task": "color",
+      "--note-life": "color",
+      "--note-focus": "color",
+      "--font-hand": "font",
+      "--font-body": "font",
+      "--font-mono": "font",
+      "--weight-regular": "font",
+      "--weight-medium": "font",
+      "--weight-bold": "font",
+      "--text-display": "font",
+      "--text-h2": "font",
+      "--text-h3": "font",
+      "--text-lg": "font",
+      "--text-md": "font",
+      "--text-base": "font",
+      "--text-sm": "font",
+      "--text-xs": "font",
+      "--leading-body": "font",
+      "--leading-tight": "font",
+      "--tracking-eyebrow": "font",
+      "--u": "spacing",
+      "--space-1": "spacing",
+      "--space-2": "spacing",
+      "--space-3": "spacing",
+      "--space-4": "spacing",
+      "--space-5": "spacing",
+      "--space-6": "spacing",
+      "--space-7": "spacing",
+      "--space-8": "spacing",
+      "--r-pill": "spacing",
+      "--r-panel": "spacing",
+      "--r-note": "spacing",
+      "--r-sm": "spacing",
+      "--shadow-note": "shadow",
+      "--shadow-note-raised": "shadow",
+      "--shadow-panel": "shadow",
+      "--shadow-paper-inset": "shadow",
+      "--ease-note": "other"
+    },
+    "fontFamilies": [
+      "Klee One",
+      "Zen Kaku Gothic New"
+    ]
+  }
+}

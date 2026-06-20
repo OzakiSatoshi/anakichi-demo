@@ -1,0 +1,27 @@
+/* ===== あなきち手帳 — Typography tokens ===== */
+:root {
+  /* families: hand for headings/notes/dates, body sans for everything else */
+  --font-hand: "Klee One", cursive;
+  --font-body: "Zen Kaku Gothic New", system-ui, sans-serif;
+  --font-mono: ui-monospace, Menlo, monospace;
+
+  /* weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  /* type scale (px) */
+  --text-display: 44px;   /* page title (hand) */
+  --text-h2: 30px;        /* thesis / big hand heading */
+  --text-h3: 26px;        /* section heading */
+  --text-lg: 18px;        /* sub-heading */
+  --text-md: 16px;        /* lead body */
+  --text-base: 15px;      /* body */
+  --text-sm: 13px;        /* notes, dense UI */
+  --text-xs: 12px;        /* captions, eyebrow */
+
+  /* rhythm */
+  --leading-body: 1.7;    /* paper-like reading */
+  --leading-tight: 1.3;   /* notes */
+  --tracking-eyebrow: 0.18em;
+}

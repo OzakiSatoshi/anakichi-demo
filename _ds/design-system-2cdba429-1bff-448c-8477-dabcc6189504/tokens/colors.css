@@ -1,0 +1,36 @@
+/* ===== あなきち手帳 — Color tokens ===== */
+/* 2-layer model: a low-chroma substrate, and saturated semantic フセン colors. */
+:root {
+  /* --- 基層 / Substrate (low chroma) --- */
+  --paper: #FAF7F1;        /* 用紙：温かいクリーム — full-bleed ground */
+  --paper-cool: #F8F8F6;   /* デイリーの白寄り用紙 */
+  --zebra: #F2EBE0;        /* 交互行の薄ベージュ帯 */
+  --hour-band: #F9EAEA;    /* 時間軸の淡いピンク帯 */
+  --rule: #E5DACE;         /* 罫線ヘアライン */
+  --hole: #EDE6DC;         /* 6穴バインダーの穴 */
+  --ink: #785850;          /* 主インク：セピアブラウン */
+  --ink-strong: #5E443C;   /* 見出し・濃いインク */
+  --ink-soft: #A28D83;     /* 補助・キャプション */
+
+  /* --- 意味の色 / Semantic フセン (saturation lives here) --- */
+  --rose: #E7B6CE;   --rose-deep: #C77A9C;   /* 約束・商談 */
+  --sky: #B7D7EF;    --sky-deep: #5E94C4;    /* タスク・連絡 */
+  --leaf: #B9D097;   --leaf-deep: #7FA254;   /* 生活・健康 */
+  --peach: #F8D0C0;  --peach-deep: #D98A6E;  /* フォーカス時間・強調・"今" */
+
+  /* --- Semantic aliases --- */
+  --bg-app: #F0E9DE;            /* desk surface behind the paper */
+  --surface-paper: var(--paper);
+  --surface-daily: var(--paper-cool);
+  --text-body: var(--ink);
+  --text-heading: var(--ink-strong);
+  --text-muted: var(--ink-soft);
+  --border-hairline: var(--rule);
+  --focus-ring: var(--peach-deep);
+
+  /* note color → meaning */
+  --note-appointment: var(--rose);
+  --note-task: var(--sky);
+  --note-life: var(--leaf);
+  --note-focus: var(--peach);
+}
