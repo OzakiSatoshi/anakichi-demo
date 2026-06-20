@@ -32,10 +32,12 @@
     .range-label { min-width: 64px !important; }
     .head-note { display: none !important; }
   }
+  .app-root  { min-height: 100vh; min-height: 100dvh; }
+  .app-shell { height: 100vh;     height: 100dvh; }
 </style>
 </helmet>
 
-<div style="{{ appStyle }}">
+<div class="app-root" style="{{ appStyle }}">
 
   <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ false }}">
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg-app)">
@@ -61,7 +63,7 @@
   </sc-if>
 
   <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ true }}">
-  <div style="{{ shellStyle }}">
+  <div class="app-shell" style="{{ shellStyle }}">
 
     <sc-if value="{{ wide }}" hint-placeholder-val="{{ false }}">
       <aside style="width:218px;flex:none;background:var(--surface-paper);border-right:1px solid var(--rule);display:flex;flex-direction:column;padding:22px 16px;gap:6px">
@@ -730,7 +732,7 @@ class Component extends DCLogic {
     const s=this.state, st=s.settings;
     const scale=st.fontScale;
     const px=(v)=> Math.round(v*scale)+'px';
-    const appStyle={ minHeight:'100vh', background:'var(--bg-app)', fontFamily:'var(--font-body)', color:'var(--ink)',
+    const appStyle={ background:'var(--bg-app)', fontFamily:'var(--font-body)', color:'var(--ink)',
       userSelect:'none', WebkitUserSelect:'none', WebkitTouchCallout:'none',
       '--text-xs':px(12), '--text-sm':px(13), '--text-base':px(15), '--text-md':px(16), '--text-lg':px(18) };
 
@@ -739,7 +741,7 @@ class Component extends DCLogic {
       appStyle, loggedIn:s.loggedIn, loggedOut:!s.loggedIn,
       wide:s.wide, narrow:!s.wide,
       brandDate: (()=>{ const d=new Date(s.today+'T00:00:00'); return (d.getMonth()+1)+'月'+d.getDate()+'日（'+this.wdJP(s.today)+'）'; })(),
-      shellStyle:{ display:'flex', height:'100vh', minHeight:0 },
+      shellStyle:{ display:'flex', minHeight:0 },
       isInbox:v==='inbox', isDaily:v==='daily', isWeekly:v==='weekly', isMonthly:v==='monthly',
       stepBtnStyle:{ width:'30px', height:'30px', borderRadius:'50%', border:'1px solid var(--rule)', background:'#fff', color:'var(--ink)', fontSize:'16px', cursor:'pointer', lineHeight:1, flex:'none' },
       ghostBtnStyle:{ padding:'9px 16px', border:'1px solid var(--rule)', borderRadius:'999px', background:'#fff', color:'var(--ink-soft)', fontSize:'13px', cursor:'pointer', flex:'none' },
