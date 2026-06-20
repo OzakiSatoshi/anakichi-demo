@@ -122,9 +122,9 @@
               </div>
             </div>
 
-            <div style="display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;min-height:120px" data-drop="inbox">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;min-height:120px" data-drop="inbox" data-zone="inbox-grid">
               <sc-for list="{{ inboxNotes }}" as="n" hint-placeholder-count="8">
-                <div onPointerDown="{{ n.onDown }}" style="{{ n.style }}">
+                <div onPointerDown="{{ n.onDown }}" data-note-id="{{ n.id }}" style="{{ n.style }}">
                   <div style="font-family:var(--font-hand);font-size:var(--text-sm);color:var(--ink);line-height:1.35">{{ n.text }}</div>
                   <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
                     <span style="font-size:11px;color:var(--ink-soft);white-space:nowrap;flex:none">{{ n.durLabel }}</span>
@@ -542,7 +542,7 @@ class Component extends DCLogic {
     return base;
   }
 
-  save(){
+  save = () => {
     try {
       const s = this.state;
       localStorage.setItem('anakichi_v1', JSON.stringify({
@@ -551,7 +551,7 @@ class Component extends DCLogic {
         aiEnabled:s.aiEnabled, view:s.view, seq:s.seq,
       }));
     } catch(e){}
-  }
+  };
 
   componentDidMount(){
     window.addEventListener('pointermove', this.onMove, {passive:false});
@@ -625,7 +625,11 @@ class Component extends DCLogic {
     if(!hit){ this.setState({drag:null}); return; }
     const k = hit.kind;
     if(k==='done'){ this.complete(id); return; }
-    if(k==='inbox'){ this.placeNote(id,{view:'inbox',date:null,startMin:null}); return; }
+    if(k==='inbox'){
+      if(hit.el.dataset.zone==='inbox-grid'){ this.dropInbox(id,x,y); }
+      else { this.placeNote(id,{view:'inbox',date:null,startMin:null}); }   // 「置き場へ」パッド経由は末尾に追加
+      return;
+    }
     const rect = hit.el.getBoundingClientRect();
     if(k==='daily'){ this.placeNote(id,{view:'daily',date:hit.date,startMin:this.yToMin(y-rect.top)}); return; }
     if(k==='weekly'){ this.placeNote(id,{view:'weekly',date:hit.date,startMin:this.xToMin(x-rect.left,rect.width)}); return; }
@@ -649,6 +653,29 @@ class Component extends DCLogic {
   }
 
   // ---------- mutations ----------
+  // 置き場グリッド上にドロップ → 読み順（左→右・上→下）で離した位置にそのまま挿入し、order を振り直す
+  dropInbox(id, x, y){
+    const grid = document.querySelector('[data-zone="inbox-grid"]');
+    const els = grid ? Array.prototype.slice.call(grid.querySelectorAll('[data-note-id]')).filter(el=>el.dataset.noteId!==id) : [];
+    let index = els.length;                              // 既定は末尾
+    for(let i=0;i<els.length;i++){
+      const b = els[i].getBoundingClientRect();
+      if(y < b.top){ index=i; break; }                  // ポインタがこの付箋の行より上 → 手前に挿入
+      if(y <= b.bottom && x < b.left + b.width/2){ index=i; break; } // 同じ行で左半分 → 手前に挿入
+    }
+    this.setState(s=>{
+      const note = s.notes[id]; if(!note) return {drag:null};
+      const ids = Object.values(s.notes)
+        .filter(o=>o.placement.view==='inbox' && o.id!==id)
+        .sort((a,b)=>a.order-b.order)
+        .map(o=>o.id);
+      const idx = Math.max(0, Math.min(index, ids.length));
+      ids.splice(idx, 0, id);
+      const notes = {...s.notes};
+      ids.forEach((nid,i)=>{ notes[nid] = {...notes[nid], placement:{view:'inbox',date:null,startMin:null}, status:'todo', order:i+1}; });
+      return {notes, drag:null};
+    }, this.save);
+  }
   placeNote(id, placement){
     this.setState(s=>{
       const note = s.notes[id]; if(!note) return {};
