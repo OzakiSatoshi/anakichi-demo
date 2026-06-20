@@ -826,10 +826,9 @@ class Component extends DCLogic {
     out.onDayNext=()=>this.setState(p=>({dailyDate:this.keyOf(this.addDays(new Date(p.dailyDate+'T00:00:00'),1))}));
     const HH=60, hours=[];
     for(let h=st.dayStart; h<=st.dayEnd; h++){
-      const band=(h===12||h===13);
       hours.push({ h, label:h+':00',
         gutterStyle:{ height:HH+'px', fontFamily:'var(--font-hand)', fontSize:'11px', color:'var(--ink-soft)', padding:'3px 0 0 7px', boxSizing:'border-box' },
-        cellStyle:{ height:HH+'px', borderTop:h===st.dayStart?'none':'1px dashed var(--rule)', background:band?'var(--hour-band)':'transparent', boxSizing:'border-box' } });
+        cellStyle:{ height:HH+'px', borderTop:h===st.dayStart?'none':'1px dashed var(--rule)', background:'transparent', boxSizing:'border-box' } });
     }
     out.dailyHours=hours;
     const gridH=(st.dayEnd-st.dayStart+1)*HH;
