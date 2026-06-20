@@ -23,6 +23,7 @@
   input, button, textarea { font-family: inherit; }
   input, textarea { -webkit-user-select: text; user-select: text; }
   @keyframes anaRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes anaPop { from { opacity: 0; transform: translate(-50%, -48%); } to { opacity: 1; transform: translate(-50%, -50%); } }
   @keyframes anaPulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
 </style>
 </helmet>
@@ -558,17 +559,28 @@ class Component extends DCLogic {
   }
 
   // ---------- drag ----------
-  handleDown(id, e){
+  handleDown(id, e, opts){
     if(e.button!=null && e.button!==0) return;
     const note = this.state.notes[id];
     if(!note) return;
     const r = e.currentTarget.getBoundingClientRect();
-    this.down = { id, sx:e.clientX, sy:e.clientY, offX:e.clientX-r.left, offY:e.clientY-r.top, w:r.width, h:r.height, moved:false };
+    this.down = { id, sx:e.clientX, sy:e.clientY, offX:e.clientX-r.left, offY:e.clientY-r.top, w:r.width, h:r.height, moved:false,
+      tray:!!(opts&&opts.tray), touch:(e.pointerType==='touch') };
   }
   onMove = (e)=>{
     if(!this.down) return;
     const dx = e.clientX-this.down.sx, dy = e.clientY-this.down.sy;
-    if(!this.down.moved){ if(Math.hypot(dx,dy)<6) return; this.down.moved=true; }
+    if(!this.down.moved){
+      if(this.down.tray && this.down.touch){
+        if(Math.hypot(dx,dy)<8) return;                      // スロップ未満は待つ
+        if(Math.abs(dx)>Math.abs(dy)){ this.down=null; return; } // 横優勢→掴まずブラウザにスクロールを任せる
+        this.down.moved=true;                                 // 縦（上方向）優勢→掴む
+        if(navigator.vibrate) navigator.vibrate(8);
+      } else {
+        if(Math.hypot(dx,dy)<6) return;
+        this.down.moved=true;
+      }
+    }
     if(e.cancelable) e.preventDefault();
     const over = this.hitDrop(e.clientX, e.clientY);
     this.setState({ drag:{ id:this.down.id, x:e.clientX-this.down.offX, y:e.clientY-this.down.offY, w:this.down.w, over: over?over.kind:null } });
@@ -727,7 +739,7 @@ class Component extends DCLogic {
       ghostBtnStyle2:{ padding:'11px 18px', border:'1.5px solid var(--ink)', borderRadius:'999px', background:'var(--paper)', color:'var(--ink-strong)', fontFamily:'var(--font-hand)', fontSize:'14px', cursor:'pointer', flex:'none' },
       toolChipStyle:{ padding:'6px 12px', border:'1px solid var(--rule)', borderRadius:'999px', background:'#fff', color:'var(--ink)', fontSize:'12px', cursor:'pointer', flex:'none' },
       toolRailStyle:{ textAlign:'left', padding:'9px 12px', border:'1px solid var(--rule)', borderRadius:'8px', background:'#fff', color:'var(--ink)', fontSize:'13px', cursor:'pointer' },
-      sheetStyle:{ position:'fixed', left:'50%', bottom:0, transform:'translateX(-50%)', width:'100%', maxWidth:'460px', maxHeight:'88vh', overflowY:'auto', background:'var(--surface-paper)', borderRadius:'16px 16px 0 0', borderTop:'1px solid var(--rule)', boxShadow:'0 -10px 40px rgba(94,68,60,.18)', padding:'18px 20px calc(22px + env(safe-area-inset-bottom))', zIndex:61, animation:'anaRise .2s ease both' },
+      sheetStyle:{ position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'calc(100% - 32px)', maxWidth:'460px', maxHeight:'88vh', overflowY:'auto', background:'var(--surface-paper)', borderRadius:'16px', border:'1px solid var(--rule)', boxShadow:'0 12px 48px rgba(94,68,60,.22)', padding:'20px', zIndex:61, animation:'anaPop .18s ease both' },
       // login
       loginEmail:s.loginEmail, loginPw:s.loginPw,
       onLoginEmail:(e)=>this.setState({loginEmail:e.target.value}),
@@ -869,8 +881,8 @@ class Component extends DCLogic {
 
     // ----- TRAY -----
     out.showTray = (v==='daily'||v==='weekly');
-    out.trayNotes = inbox.map(n=>({ id:n.id, text:n.text, durLabel:this.fmtDur(n.duration), onDown:(e)=>this.handleDown(n.id,e),
-      style:{ flex:'none', width:'138px', background:this.noteBg(n.color), border:this.aging(n).border, borderTop:'2px solid rgba(255,255,255,.45)', borderRadius:'5px', padding:'7px 9px', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none', transform:'rotate(-0.6deg)' } }));
+    out.trayNotes = inbox.map(n=>({ id:n.id, text:n.text, durLabel:this.fmtDur(n.duration), onDown:(e)=>this.handleDown(n.id,e,{tray:true}),
+      style:{ flex:'none', width:'138px', background:this.noteBg(n.color), border:this.aging(n).border, borderTop:'2px solid rgba(255,255,255,.45)', borderRadius:'5px', padding:'7px 9px', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'pan-x', transform:'rotate(-0.6deg)' } }));
     out.trayEmpty = inbox.length===0;
 
     // ----- DRAG ghost + pads -----
