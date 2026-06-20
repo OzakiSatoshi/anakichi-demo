@@ -732,6 +732,10 @@ class Component extends DCLogic {
 
   // ---------- vm builders ----------
   noteBg(color){ return 'var(--'+color+')'; }
+  // 付箋IDから決まる微小な傾き（再描画でもブレない手書き感）
+  noteTilt(id){ let h=0; const s=String(id); for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return [-1.1,-0.6,0.6,1.0][h%4]; }
+  // 地色に「角の折れ」を重ねた background（fold時のみ右下にめくれた影）
+  stickyBg(color, fold){ return fold ? 'linear-gradient(-45deg, rgba(94,68,60,.16) 0 9px, transparent 9px) bottom right/9px 9px no-repeat, var(--'+color+')' : 'var(--'+color+')'; }
   badgeStyle(){ return { fontSize:'10px', color:'var(--peach-deep)', border:'1px solid var(--peach-deep)', borderRadius:'4px', padding:'0 5px', lineHeight:'15px', whiteSpace:'nowrap' }; }
 
   vmChip(note){
@@ -850,7 +854,7 @@ class Component extends DCLogic {
           return { id:n.id, text:n.text, sub:'G  '+this.timeLabel(it.start), style:base, onDown:undefined };
         }
         const ag=this.aging(n);
-        Object.assign(base,{ background:this.noteBg(n.color), borderTop:'2px solid rgba(255,255,255,.45)', border:ag.border, cursor:'grab' });
+        Object.assign(base,{ background:this.stickyBg(n.color, height>=34), borderTop:'2px solid rgba(255,255,255,.55)', border:ag.border, boxShadow:'var(--shadow-sticky)', transform:'rotate('+this.noteTilt(n.id)+'deg)', cursor:'grab' });
         const dim = (s.drag && s.drag.id===n.id);
         if(dim) base.opacity=0.3;
         return { id:n.id, text:n.text, sub:this.timeLabel(it.start)+' ・ '+this.fmtDur(n.duration), style:base, onDown:(e)=>this.handleDown(n.id,e) };
@@ -877,10 +881,10 @@ class Component extends DCLogic {
       const ag=this.aging(n); const dim=(s.drag&&s.drag.id===n.id);
       return { id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e),
         style:{ position:'absolute', top:'4px', height:(height-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px',
-          background:this.noteBg(n.color), border:ag.border, borderRadius:'5px', padding:'0 6px', display:'flex', alignItems:'center',
-          fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', boxShadow:'var(--shadow-note)', overflow:'visible',
+          background:this.stickyBg(n.color, n.duration>=60), border:ag.border, borderTop:'2px solid rgba(255,255,255,.5)', borderRadius:'5px', padding:'0 6px', display:'flex', alignItems:'center',
+          fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', boxShadow:'var(--shadow-sticky)', overflow:'visible',
           whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)',
-          cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } };
+          transform:'rotate('+this.noteTilt(n.id)+'deg)', cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } };
     };
     const TRK=52;
     out.weekDays = week.map(dk=>{
