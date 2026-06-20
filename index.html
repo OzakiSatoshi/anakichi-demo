@@ -744,7 +744,7 @@ class Component extends DCLogic {
       hasBadge: !!ag.badge, badge: ag.badge||'', badgeStyle:this.badgeStyle(),
       style:{ position:'relative', width:'160px', background:this.noteBg(note.color), borderRadius:'0',
         borderTop:'2px solid rgba(255,255,255,.5)', border:ag.border, padding:'8px 11px',
-        boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none' },
+        boxShadow:'var(--shadow-sticky)', cursor:'grab', touchAction:'none' },
       onDown:(e)=>this.handleDown(note.id,e),
     };
   }
@@ -888,7 +888,7 @@ class Component extends DCLogic {
       const isToday=dk===s.today;
       const timedNotes=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin!=null) timedNotes.push(horizNote(n,TRK)); });
       if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===dk){ const left=(c.startMin-7*60)/span*100, width=Math.max(c.duration/span*100,3); timedNotes.push({ id:c.id, text:c.text, onDown:undefined, style:{ position:'absolute', top:'4px', height:(TRK-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px', background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', borderRadius:'0', padding:'0 6px', display:'flex', alignItems:'center', fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', overflow:'visible', whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)' } }); } });
-      const untimed=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin==null){ const dim=(s.drag&&s.drag.id===n.id); untimed.push({ id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e), style:{ background:this.noteBg(n.color), border:this.aging(n).border, borderRadius:'0', padding:'4px 9px', fontFamily:'var(--font-hand)', fontSize:'12px', color:'var(--ink)', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } }); } });
+      const untimed=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin==null){ const dim=(s.drag&&s.drag.id===n.id); untimed.push({ id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e), style:{ background:this.noteBg(n.color), border:this.aging(n).border, borderRadius:'0', padding:'4px 9px', fontFamily:'var(--font-hand)', fontSize:'12px', color:'var(--ink)', boxShadow:'var(--shadow-sticky)', cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } }); } });
       const d=new Date(dk+'T00:00:00');
       return { date:dk, day:d.getDate(), weekday:this.wdJP(dk), dateColor:isToday?'var(--peach-deep)':'var(--ink-strong)',
         rowStyle:{ display:'flex', borderTop: dk===week[0]?'none':'1px solid var(--rule)', background:isToday?'rgba(248,208,192,.10)':'transparent' },
@@ -919,7 +919,7 @@ class Component extends DCLogic {
     // ----- TRAY -----
     out.showTray = (v==='daily'||v==='weekly');
     out.trayNotes = inbox.map(n=>({ id:n.id, text:n.text, durLabel:this.fmtDur(n.duration), onDown:(e)=>this.handleDown(n.id,e,{tray:true}),
-      style:{ flex:'none', width:'138px', background:this.noteBg(n.color), border:this.aging(n).border, borderTop:'2px solid rgba(255,255,255,.45)', borderRadius:'0', padding:'7px 9px', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'pan-x' } }));
+      style:{ flex:'none', width:'138px', background:this.noteBg(n.color), border:this.aging(n).border, borderTop:'2px solid rgba(255,255,255,.45)', borderRadius:'0', padding:'7px 9px', boxShadow:'var(--shadow-sticky)', cursor:'grab', touchAction:'pan-x' } }));
     out.trayEmpty = inbox.length===0;
 
     // ----- DRAG ghost + pads -----
