@@ -14,7 +14,7 @@
   /* radii */
   --r-pill: 999px;      /* pill headers, tab chips */
   --r-panel: 12px;      /* paper panels */
-  --r-note: 5px;        /* sticky notes */
+  --r-note: 0;          /* sticky notes — square corners for a paper-note look */
   --r-sm: 4px;          /* small chips, brackets */
 
   /* shadows — soft, warm, low */

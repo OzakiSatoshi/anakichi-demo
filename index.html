@@ -732,8 +732,6 @@ class Component extends DCLogic {
 
   // ---------- vm builders ----------
   noteBg(color){ return 'var(--'+color+')'; }
-  // 付箋IDから決まる微小な傾き（再描画でもブレない手書き感）
-  noteTilt(id){ let h=0; const s=String(id); for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return [-1.1,-0.6,0.6,1.0][h%4]; }
   // 地色に「角の折れ」を重ねた background（fold時のみ右下にめくれた影）
   stickyBg(color, fold){ return fold ? 'linear-gradient(-45deg, rgba(94,68,60,.16) 0 9px, transparent 9px) bottom right/9px 9px no-repeat, var(--'+color+')' : 'var(--'+color+')'; }
   badgeStyle(){ return { fontSize:'10px', color:'var(--peach-deep)', border:'1px solid var(--peach-deep)', borderRadius:'4px', padding:'0 5px', lineHeight:'15px', whiteSpace:'nowrap' }; }
@@ -744,9 +742,9 @@ class Component extends DCLogic {
       id:note.id, text:note.text,
       durLabel:this.fmtDur(note.duration),
       hasBadge: !!ag.badge, badge: ag.badge||'', badgeStyle:this.badgeStyle(),
-      style:{ position:'relative', width:'160px', background:this.noteBg(note.color), borderRadius:'5px',
+      style:{ position:'relative', width:'160px', background:this.noteBg(note.color), borderRadius:'0',
         borderTop:'2px solid rgba(255,255,255,.5)', border:ag.border, padding:'8px 11px',
-        boxShadow:'var(--shadow-note)', transform:'rotate(-0.6deg)', cursor:'grab', touchAction:'none' },
+        boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none' },
       onDown:(e)=>this.handleDown(note.id,e),
     };
   }
@@ -811,7 +809,7 @@ class Component extends DCLogic {
     out.onCmpDurMinus=()=>this.setState(p=>({cmpDur:Math.max(5,p.cmpDur-5)}));
     out.onCmpDurPlus=()=>this.setState(p=>({cmpDur:p.cmpDur+5}));
     out.onCmpAdd=()=>this.addNew();
-    const swatch=(key,active,on)=>({ width:'26px', height:'26px', borderRadius:'5px', cursor:'pointer', background:'var(--'+key+')', border: active?'2px solid var(--ink)':'2px solid transparent', boxShadow:'var(--shadow-note)' });
+    const swatch=(key,active,on)=>({ width:'26px', height:'26px', borderRadius:'0', cursor:'pointer', background:'var(--'+key+')', border: active?'2px solid var(--ink)':'2px solid transparent', boxShadow:'var(--shadow-note)' });
     const CATS=[['rose','約束・商談'],['sky','タスク・連絡'],['leaf','生活・健康'],['peach','強調・今']];
     out.cmpColors=CATS.map(([key,label])=>({ key,label, style:swatch(key,s.cmpColor===key), onClick:()=>this.setState({cmpColor:key}) }));
 
@@ -847,14 +845,14 @@ class Component extends DCLogic {
         const total=it.total||1, col=it.col||0;
         const base={ position:'absolute', top:Math.max(0,top)+'px', height:height+'px',
           left:'calc('+(col*100/total)+'% + 3px)', width:'calc('+(100/total)+'% - 6px)',
-          borderRadius:'5px', padding:'5px 7px', boxSizing:'border-box', overflow:'hidden',
+          borderRadius:'0', padding:'5px 7px', boxSizing:'border-box', overflow:'hidden',
           boxShadow:'var(--shadow-note)', touchAction:'none' };
         if(it.locked){
           Object.assign(base,{ background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', cursor:'default' });
           return { id:n.id, text:n.text, sub:'G  '+this.timeLabel(it.start), style:base, onDown:undefined };
         }
         const ag=this.aging(n);
-        Object.assign(base,{ background:this.stickyBg(n.color, height>=34), borderTop:'2px solid rgba(255,255,255,.55)', border:ag.border, boxShadow:'var(--shadow-sticky)', transform:'rotate('+this.noteTilt(n.id)+'deg)', cursor:'grab' });
+        Object.assign(base,{ background:this.stickyBg(n.color, height>=34), borderTop:'2px solid rgba(255,255,255,.55)', border:ag.border, boxShadow:'var(--shadow-sticky)', cursor:'grab' });
         const dim = (s.drag && s.drag.id===n.id);
         if(dim) base.opacity=0.3;
         return { id:n.id, text:n.text, sub:this.timeLabel(it.start)+' ・ '+this.fmtDur(n.duration), style:base, onDown:(e)=>this.handleDown(n.id,e) };
@@ -881,17 +879,17 @@ class Component extends DCLogic {
       const ag=this.aging(n); const dim=(s.drag&&s.drag.id===n.id);
       return { id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e),
         style:{ position:'absolute', top:'4px', height:(height-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px',
-          background:this.stickyBg(n.color, n.duration>=60), border:ag.border, borderTop:'2px solid rgba(255,255,255,.5)', borderRadius:'5px', padding:'0 6px', display:'flex', alignItems:'center',
+          background:this.stickyBg(n.color, n.duration>=60), border:ag.border, borderTop:'2px solid rgba(255,255,255,.5)', borderRadius:'0', padding:'0 6px', display:'flex', alignItems:'center',
           fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', boxShadow:'var(--shadow-sticky)', overflow:'visible',
           whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)',
-          transform:'rotate('+this.noteTilt(n.id)+'deg)', cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } };
+          cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } };
     };
     const TRK=52;
     out.weekDays = week.map(dk=>{
       const isToday=dk===s.today;
       const timedNotes=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin!=null) timedNotes.push(horizNote(n,TRK)); });
-      if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===dk){ const left=(c.startMin-7*60)/span*100, width=Math.max(c.duration/span*100,3); timedNotes.push({ id:c.id, text:c.text, onDown:undefined, style:{ position:'absolute', top:'4px', height:(TRK-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px', background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', borderRadius:'5px', padding:'0 6px', display:'flex', alignItems:'center', fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', overflow:'visible', whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)' } }); } });
-      const untimed=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin==null){ const dim=(s.drag&&s.drag.id===n.id); untimed.push({ id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e), style:{ background:this.noteBg(n.color), border:this.aging(n).border, borderRadius:'5px', padding:'4px 9px', fontFamily:'var(--font-hand)', fontSize:'12px', color:'var(--ink)', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none', transform:'rotate(-0.6deg)', opacity:dim?0.3:1 } }); } });
+      if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===dk){ const left=(c.startMin-7*60)/span*100, width=Math.max(c.duration/span*100,3); timedNotes.push({ id:c.id, text:c.text, onDown:undefined, style:{ position:'absolute', top:'4px', height:(TRK-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px', background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', borderRadius:'0', padding:'0 6px', display:'flex', alignItems:'center', fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', overflow:'visible', whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)' } }); } });
+      const untimed=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.view==='weekly'&&n.placement.date===dk&&n.placement.startMin==null){ const dim=(s.drag&&s.drag.id===n.id); untimed.push({ id:n.id, text:n.text, onDown:(e)=>this.handleDown(n.id,e), style:{ background:this.noteBg(n.color), border:this.aging(n).border, borderRadius:'0', padding:'4px 9px', fontFamily:'var(--font-hand)', fontSize:'12px', color:'var(--ink)', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'none', opacity:dim?0.3:1 } }); } });
       const d=new Date(dk+'T00:00:00');
       return { date:dk, day:d.getDate(), weekday:this.wdJP(dk), dateColor:isToday?'var(--peach-deep)':'var(--ink-strong)',
         rowStyle:{ display:'flex', borderTop: dk===week[0]?'none':'1px solid var(--rule)', background:isToday?'rgba(248,208,192,.10)':'transparent' },
@@ -911,7 +909,7 @@ class Component extends DCLogic {
     out.monthDays = months.map(dk=>{
       const isToday=dk===s.today;
       const timed=[]; Object.values(s.notes).forEach(n=>{ if(n.placement.date===dk && n.placement.startMin!=null && n.placement.view!=='inbox') timed.push(horizNote(n,MTRK)); });
-      if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===dk){ const left=(c.startMin-7*60)/span*100, width=Math.max(c.duration/span*100,3); timed.push({ id:c.id, text:c.text, onDown:undefined, style:{ position:'absolute', top:'4px', height:(MTRK-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px', background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', borderRadius:'4px', padding:'0 6px', display:'flex', alignItems:'center', fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', overflow:'visible', whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)' } }); } });
+      if(s.calendarConnected) s.calEvents.forEach(c=>{ if(c.date===dk){ const left=(c.startMin-7*60)/span*100, width=Math.max(c.duration/span*100,3); timed.push({ id:c.id, text:c.text, onDown:undefined, style:{ position:'absolute', top:'4px', height:(MTRK-8)+'px', left:left+'%', width:'calc('+width+'% - 2px)', minWidth:'12px', background:'repeating-linear-gradient(45deg, transparent 0 5px, rgba(120,88,80,.16) 5px 7px)', border:'1.5px solid var(--ink)', borderRadius:'0', padding:'0 6px', display:'flex', alignItems:'center', fontFamily:'var(--font-hand)', fontSize:'11px', lineHeight:1.1, color:'var(--ink)', overflow:'visible', whiteSpace:'nowrap', textShadow:'0 0 2px rgba(250,247,241,.85), 0 0 2px rgba(250,247,241,.85)' } }); } });
       const d=new Date(dk+'T00:00:00');
       return { date:dk, day:d.getDate(), weekday:this.wdJP(dk), dateColor:isToday?'var(--peach-deep)':'var(--ink-strong)',
         rowStyle:{ display:'flex', alignItems:'stretch', borderTop: dk===months[0]?'none':'1px solid var(--rule)', background:isToday?'rgba(248,208,192,.12)':((d.getDay()===0||d.getDay()===6)?'var(--zebra)':'transparent') },
@@ -922,7 +920,7 @@ class Component extends DCLogic {
     // ----- TRAY -----
     out.showTray = (v==='daily'||v==='weekly');
     out.trayNotes = inbox.map(n=>({ id:n.id, text:n.text, durLabel:this.fmtDur(n.duration), onDown:(e)=>this.handleDown(n.id,e,{tray:true}),
-      style:{ flex:'none', width:'138px', background:this.noteBg(n.color), border:this.aging(n).border, borderTop:'2px solid rgba(255,255,255,.45)', borderRadius:'5px', padding:'7px 9px', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'pan-x', transform:'rotate(-0.6deg)' } }));
+      style:{ flex:'none', width:'138px', background:this.noteBg(n.color), border:this.aging(n).border, borderTop:'2px solid rgba(255,255,255,.45)', borderRadius:'0', padding:'7px 9px', boxShadow:'var(--shadow-note)', cursor:'grab', touchAction:'pan-x' } }));
     out.trayEmpty = inbox.length===0;
 
     // ----- DRAG ghost + pads -----
@@ -930,7 +928,7 @@ class Component extends DCLogic {
     if(s.drag){
       const note=s.notes[s.drag.id];
       out.ghostText = note?note.text:'';
-      out.ghostStyle={ position:'fixed', left:s.drag.x+'px', top:s.drag.y+'px', width:(s.drag.w||140)+'px', maxWidth:'180px', background:note?this.noteBg(note.color):'var(--sky)', borderRadius:'5px', borderTop:'2px solid rgba(255,255,255,.5)', padding:'8px 11px', fontFamily:'var(--font-hand)', fontSize:'13px', color:'var(--ink)', boxShadow:'var(--shadow-note-raised)', transform:'rotate(-2deg) scale(1.04)', pointerEvents:'none', zIndex:80, opacity:.96 };
+      out.ghostStyle={ position:'fixed', left:s.drag.x+'px', top:s.drag.y+'px', width:(s.drag.w||140)+'px', maxWidth:'180px', background:note?this.noteBg(note.color):'var(--sky)', borderRadius:'0', borderTop:'2px solid rgba(255,255,255,.5)', padding:'8px 11px', fontFamily:'var(--font-hand)', fontSize:'13px', color:'var(--ink)', boxShadow:'var(--shadow-note-raised)', transform:'scale(1.04)', pointerEvents:'none', zIndex:80, opacity:.96 };
       const padBase={ position:'fixed', bottom:'26px', width:'120px', height:'70px', borderRadius:'14px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'2px', zIndex:79, pointerEvents:'none', fontFamily:'var(--font-body)' };
       out.donePadStyle={ ...padBase, left:'22px', background: s.drag.over==='done'?'var(--leaf)':'var(--surface-paper)', border:'2px dashed var(--leaf-deep)', color:'var(--ink-strong)', boxShadow:'var(--shadow-panel)' };
       out.inboxPadStyle={ ...padBase, right:'22px', background: s.drag.over==='inbox'?'var(--sky)':'var(--surface-paper)', border:'2px dashed var(--sky-deep)', color:'var(--ink-strong)', boxShadow:'var(--shadow-panel)' };
